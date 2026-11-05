@@ -1,0 +1,134 @@
+主要功能
+
+这个CartesianController类实现了机械臂在笛卡尔坐标系下的高级控制功能，将操作员的控制指令转换为关节力矩输出。
+1. 核心控制理念
+
+笛卡尔空间控制：直接在三维空间中控制机械臂末端执行器的位置和姿态，而不是单独控制每个关节。
+2. 主要组件
+
+机械臂接口集成：
+python
+
+self._arm_interface = ArmInterface()  # 机械臂运动学接口
+
+坐标变换处理：
+python
+
+# 处理机器人基座与机械臂基座之间的坐标变换
+self.listener = tf.TransformListener()
+self._trans = PyKDL.Frame(rot, PyKDL.Vector(pos[0], pos[1], pos[2]))
+
+控制指令处理：
+python
+
+self._vel_command_sub = rospy.Subscriber(
+    'cmd_vel', Twist, self._vel_command_callback)  # 速度指令订阅
+
+3. 关键算法
+
+输入滤波：
+python
+
+def _filter_input(self, state, cmd, dt):
+    alpha = np.exp(- 1 * dt / self._tau)  # 一阶低通滤波器
+    return state * alpha + (1.0 - alpha) * cmd
+
+    平滑操作员输入，避免剧烈运动
+
+    时间常数self._tau控制滤波强度
+
+目标生成：
+python
+
+def _get_goal(self):
+    # 根据当前速度和姿态生成下一个目标位姿
+    next_goal = deepcopy(self._last_goal)
+    next_goal.p += PyKDL.Vector(self._command[0], self._command[1], self._command[2])
+
+    积分速度指令得到位置目标
+
+    组合旋转得到姿态目标
+
+    通过逆运动学验证目标可达性
+
+4. 控制流程
+text
+
+操作员速度指令 → 滤波处理 → 目标位姿生成 → 逆运动学验证 → 关节控制
+
+5. ROS通信接口
+
+输入话题：
+
+    cmd_vel：Twist类型的速度指令（线速度和角速度）
+
+    home_pressed：Bool类型的归位指令
+
+输出话题：
+
+    各个关节的控制指令（/joint/controller/command）
+
+    reference：当前目标位姿（用于监控）
+
+    reference_marker：RViz可视化标记
+
+6. 安全特性
+
+超时保护：
+python
+
+if self._command is None or rospy.get_time() - self._last_reference_update > 0.1:
+    return self._last_goal
+
+    0.5秒超时，无指令时停止运动
+
+可达性验证：
+python
+
+if self._arm_interface.inverse_kinematics(g_pos, g_quat) is not None:
+    return next_goal
+else:
+    print('Next goal could not be resolved...')
+    return self._last_goal
+
+    通过逆运动学验证目标是否可达
+
+    不可达时保持当前位置
+
+7. 应用场景
+
+这个笛卡尔控制器主要用于：
+
+    遥操作控制：操作员直接控制末端执行器的运动
+
+    轨迹跟踪：在笛卡尔空间中跟踪预定轨迹
+
+    精细操作：水下精细作业任务
+
+    自主导航：与其他系统集成实现自主操作
+
+8. 技术优势
+
+    直观控制：操作员直接在任务空间控制，无需理解关节级运动
+
+    平滑运动：滤波算法确保运动平稳
+
+    安全可靠：多重保护机制防止奇异位形和不可达目标
+
+    实时性好：25Hz的控制频率满足实时性要求
+
+    可视化支持：提供RViz标记便于监控
+
+9. 在水下作业中的重要性
+
+对于水下机器人，笛卡尔空间控制特别重要，因为：
+
+    操作员难以直接观察机械臂状态
+
+    水下环境存在水流等扰动
+
+    需要精确的末端执行器定位
+
+    安全性和可靠性要求高
+
+这是一个典型的水下机器人高级控制组件，为复杂的海洋作业任务提供了人性化且可靠的控制接口。

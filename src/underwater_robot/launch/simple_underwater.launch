@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Set environment variables -->
+  <env name="SVGA_VGPU10" value="0" />
+  <env name="PYTHONIOENCODING" value="utf-8" />
+  
+  <!-- Start uuv_simulator underwater world -->
+  <include file="$(find uuv_gazebo_worlds)/launch/empty_underwater_world.launch">
+    <arg name="gui" value="false"/>
+    <arg name="paused" value="false"/>
+  </include>
+
+  <!-- UsestdinmethodSpawn robot, avoidParametersServer encoding issues -->
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" 
+        args="-stdin -urdf -model underwater_robot -x 0 -y 0 -z -5" 
+        output="screen">
+    <param name="robot_description" command="cat $(find underwater_robot)/urdf/underwater_robot_complete.urdf" />
+  </node>
+  
+  <!-- Only launchrobot_state_publisher, skipjoint_state_publisher -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  
+</launch>

@@ -1,0 +1,582 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="underwater_robot">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.00388812346992118 0.214797507718185 0.000476870940854357"
+        rpy="0 0 0" />
+      <mass
+        value="21.9611699884002" />
+      <inertia
+        ixx="0.23895137440233"
+        ixy="-6.02120687701648E-05"
+        ixz="6.67278401351575E-08"
+        iyy="0.743447355689122"
+        iyz="1.63793544263822E-06"
+        izz="0.621848783014161" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://underwater_robot/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.988235294117647 1 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://underwater_robot/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="Link1">
+    <inertial>
+      <origin
+        xyz="-0.284442084254638 0.0315351600726216 0.110185193232208"
+        rpy="0 0 0" />
+      <mass
+        value="26.1757475044251" />
+      <inertia
+        ixx="0.694456523856631"
+        ixy="0.0239708286389597"
+        ixz="-0.00454179397071017"
+        iyy="1.11839552637036"
+        iyz="0.00257399094431449"
+        izz="1.14010350472946" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://underwater_robot/meshes/Link1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://underwater_robot/meshes/Link1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="J1"
+    type="continuous">
+    <origin
+      xyz="0.288260052347553 0.179999999999991 -0.10968904997502"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="Link1" />
+    <axis
+      xyz="0.866025403784441 0 0.499999999999996" />
+  </joint>
+  <link
+    name="Link2">
+    <inertial>
+      <origin
+        xyz="-0.284442084254639 0.0315351600726221 -0.109192906717831"
+        rpy="0 0 0" />
+      <mass
+        value="26.1757475044251" />
+      <inertia
+        ixx="0.694456523856631"
+        ixy="0.0239708286389598"
+        ixz="-0.00454179397071014"
+        iyy="1.11839552637036"
+        iyz="0.00257399094431438"
+        izz="1.14010350472946" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://underwater_robot/meshes/Link2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://underwater_robot/meshes/Link2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="J2"
+    type="continuous">
+    <origin
+      xyz="0.288260052347554 0.17999999999999 0.10968904997502"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="Link2" />
+    <axis
+      xyz="0.86602540378444 0 -0.499999999999998" />
+  </joint>
+  <link
+    name="Link3">
+    <inertial>
+      <origin
+        xyz="-0.13617431748477 -0.124056489896612 0.125496143257188"
+        rpy="0 0 0" />
+      <mass
+        value="26.1757475044251" />
+      <inertia
+        ixx="0.694456523856631"
+        ixy="0.0239708286389597"
+        ixz="-0.00454179397071017"
+        iyy="1.11839552637036"
+        iyz="0.0025739909443145"
+        izz="1.14010350472946" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://underwater_robot/meshes/Link3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://underwater_robot/meshes/Link3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="J3"
+    type="fixed">
+    <origin
+      xyz="0.139992285577685 0.335591649969225 -0.125"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="Link3" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="Link4">
+    <inertial>
+      <origin
+        xyz="-0.13617431748477 -0.124056489896612 -0.124503856742812"
+        rpy="0 0 0" />
+      <mass
+        value="26.1757475044251" />
+      <inertia
+        ixx="0.694456523856631"
+        ixy="0.0239708286389597"
+        ixz="-0.00454179397071016"
+        iyy="1.11839552637036"
+        iyz="0.00257399094431448"
+        izz="1.14010350472946" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://underwater_robot/meshes/Link4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://underwater_robot/meshes/Link4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="J4"
+    type="fixed">
+    <origin
+      xyz="0.139992285577685 0.335591649969225 0.125"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="Link4" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="Link5">
+    <inertial>
+      <origin
+        xyz="0.143825682515232 -0.124056489896607 0.125496143257189"
+        rpy="0 0 0" />
+      <mass
+        value="26.1757475044251" />
+      <inertia
+        ixx="0.694456523856631"
+        ixy="0.0239708286389596"
+        ixz="-0.00454179397071016"
+        iyy="1.11839552637036"
+        iyz="0.00257399094431449"
+        izz="1.14010350472946" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://underwater_robot/meshes/Link5.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://underwater_robot/meshes/Link5.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="J5"
+    type="continuous">
+    <origin
+      xyz="-0.140007714422317 0.335591649969219 -0.125"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="Link5" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="Link6">
+    <inertial>
+      <origin
+        xyz="0.143825682515232 -0.124056489896607 -0.124503856742812"
+        rpy="0 0 0" />
+      <mass
+        value="26.1757475044251" />
+      <inertia
+        ixx="0.694456523856631"
+        ixy="0.0239708286389597"
+        ixz="-0.00454179397071016"
+        iyy="1.11839552637036"
+        iyz="0.00257399094431447"
+        izz="1.14010350472946" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://underwater_robot/meshes/Link6.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://underwater_robot/meshes/Link6.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="J6"
+    type="continuous">
+    <origin
+      xyz="-0.140007714422317 0.335591649969219 0.125"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="Link6" />
+    <axis
+      xyz="0 1 0" />
+  </joint>
+  <link
+    name="Link7">
+    <inertial>
+      <origin
+        xyz="0.292093449285101 0.0315351600726186 -0.109192906717829"
+        rpy="0 0 0" />
+      <mass
+        value="26.1757475044251" />
+      <inertia
+        ixx="0.69445652385663"
+        ixy="0.0239708286389596"
+        ixz="-0.00454179397071014"
+        iyy="1.11839552637036"
+        iyz="0.00257399094431444"
+        izz="1.14010350472946" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://underwater_robot/meshes/Link7.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://underwater_robot/meshes/Link7.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="J7"
+    type="continuous">
+    <origin
+      xyz="-0.288275481192185 0.179999999999994 0.109689049975018"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="Link7" />
+    <axis
+      xyz="-0.86602540378444 0 -0.499999999999998" />
+  </joint>
+  <link
+    name="Link8">
+    <inertial>
+      <origin
+        xyz="0.2920934492851 0.0315351600726188 0.110185193232206"
+        rpy="0 0 0" />
+      <mass
+        value="26.1757475044251" />
+      <inertia
+        ixx="0.694456523856631"
+        ixy="0.0239708286389598"
+        ixz="-0.00454179397071014"
+        iyy="1.11839552637036"
+        iyz="0.00257399094431444"
+        izz="1.14010350472946" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://underwater_robot/meshes/Link8.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://underwater_robot/meshes/Link8.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="J8"
+    type="continuous">
+    <origin
+      xyz="-0.28828 0.18 -0.10969"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="Link8" />
+    <axis
+      xyz="-0.86603 0 0.5" />
+  </joint>
+  <link
+    name="Link9">
+    <inertial>
+      <origin
+        xyz="-0.197367290138972 3.1641356201817E-15 -1.13797860024079E-15"
+        rpy="0 0 0" />
+      <mass
+        value="1.03393910252923" />
+      <inertia
+        ixx="0.00354213590504132"
+        ixy="5.34392119916816E-18"
+        ixz="-4.25653721872329E-19"
+        iyy="0.00621309491541952"
+        iyz="-1.30102257820008E-18"
+        izz="0.00621309491541951" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://underwater_robot/meshes/Link9.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://underwater_robot/meshes/Link9.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="camera"
+    type="fixed">
+    <origin
+      xyz="0.17999 0.1735 0"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="Link9" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="Link10">
+    <inertial>
+      <origin
+        xyz="0.0068200882299887 -2.70591645078477E-05 0.0299493911134847"
+        rpy="0 0 0" />
+      <mass
+        value="0.387766393452322" />
+      <inertia
+        ixx="7.20995315346367E-05"
+        ixy="4.79320615146667E-06"
+        ixz="1.66510519905277E-09"
+        iyy="0.00406238242640918"
+        iyz="9.71393809401032E-11"
+        izz="0.00406025716694692" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://underwater_robot/meshes/Link10.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://underwater_robot/meshes/Link10.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="arm1"
+    type="revolute">
+    <origin
+      xyz="0.374251802975354 0.0161421530640257 -0.03"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="Link10" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="0"
+      effort="0"
+      velocity="0" />
+  </joint>
+</robot>

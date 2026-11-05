@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- 包含必要的宏定义 -->
+  <xacro:include filename="$(find uuv_descriptions)/urdf/thruster.xacro"/>
+  <xacro:include filename="$(find uuv_descriptions)/urdf/common.urdf.xacro"/>
+
+  <!-- 定义度到弧度的转换因子 -->
+  <xacro:property name="d2r" value="0.017453292519943295"/>
+
+  <xacro:macro name="underwater_robot_actuators" params="namespace">
+    
+    <!-- 直接使用 thruster_module_first_order_basic_fcn_macro 宏 -->
+    <!-- 前左推进器 -->
+    <xacro:thruster_module_first_order_basic_fcn_macro
+      namespace="${namespace}"
+      thruster_id="0"
+      mesh_filename="file://$(find uuv_descriptions)/meshes/prop.dae"
+      dyn_time_constant="0.05"
+      rotor_constant="0.00031">
+      <origin xyz="0.28826 0.18 -0.10969" rpy="0 0 0"/>
+    </xacro:thruster_module_first_order_basic_fcn_macro>
+    
+    <!-- 前右推进器 -->
+    <xacro:thruster_module_first_order_basic_fcn_macro
+      namespace="${namespace}"
+      thruster_id="1"
+      mesh_filename="file://$(find uuv_descriptions)/meshes/prop.dae"
+      dyn_time_constant="0.05"
+      rotor_constant="0.00031">
+      <origin xyz="0.28826 0.18 0.10969" rpy="0 0 0"/>
+    </xacro:thruster_module_first_order_basic_fcn_macro>
+    
+    <!-- 后左推进器 -->
+    <xacro:thruster_module_first_order_basic_fcn_macro
+      namespace="${namespace}"
+      thruster_id="2"
+      mesh_filename="file://$(find uuv_descriptions)/meshes/prop.dae"
+      dyn_time_constant="0.05"
+      rotor_constant="0.00031">
+      <origin xyz="-0.28828 0.18 -0.10969" rpy="0 0 0"/>
+    </xacro:thruster_module_first_order_basic_fcn_macro>
+    
+    <!-- 后右推进器 -->
+    <xacro:thruster_module_first_order_basic_fcn_macro
+      namespace="${namespace}"
+      thruster_id="3"
+      mesh_filename="file://$(find uuv_descriptions)/meshes/prop.dae"
+      dyn_time_constant="0.05"
+      rotor_constant="0.00031">
+      <origin xyz="-0.28828 0.18 0.10969" rpy="0 0 0"/>
+    </xacro:thruster_module_first_order_basic_fcn_macro>
+    
+  </xacro:macro>
+
+</robot>

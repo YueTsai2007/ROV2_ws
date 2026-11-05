@@ -1,0 +1,109 @@
+<!-- 
+启动RexROV2水下机器人的[PD控制器加恢复力补偿](https://github.com/uuvsimulator/uuv_simulator/blob/master/uuv_control/uuv_trajectory_control/scripts/rov_pd_grav_compensation_controller.py)
+该控制器结合了传统的PD控制与重力、浮力等恢复力的主动补偿
+
+使用示例：
+
+1. 启动Gazebo海洋环境仿真：
+roslaunch uuv_gazebo_worlds ocean_waves.launch
+
+2. 加载RexROV2机器人模型：
+roslaunch rexrov2_description upload_rexrov2.launch
+
+3. 启动PD重力补偿控制器：
+roslaunch rexrov2_control start_pd_grav_compensation_controller.launch
+-->
+<launch>
+    <!-- 基础配置参数 -->
+    <arg name="uuv_name" default="rexrov2" doc="Namespace of the vehicle to be controller"/> <!-- 被控制机器人的命名空间 -->
+    <!-- Flag to start recoding a rosbag  -->
+    <arg name="record" default="false" doc="Record ROS bag"/> <!-- 是否记录ROS数据包 -->
+
+    <!-- 可视化与坐标系配置 -->
+    <arg name="gui_on" default="true" doc="Start Gazebo client and RViz"/> <!-- 是否启动Gazebo客户端和RViz可视化 -->
+    <arg name="use_ned_frame" default="false" doc="If true, the reference frame is set to be NED (North-East-Down) instead of Gazebo's default ENU (East-North-Up)"/> <!-- 坐标系选择：false=ENU, true=NED -->
+
+    <!-- PD控制器参数 -->
+    <!-- 比例增益矩阵，对应6个自由度：x,y,z,roll,pitch,yaw -->
+    <arg name="Kp" default="1000,1000,1000,1000,1000,1000" doc="Coefficients for the $K_p$ diagonal matrix"/>
+    <!-- 微分增益矩阵，对应6个自由度 -->
+    <arg name="Kd" default="100,100,100,100,100,100" doc="Coefficients for the $K_d$ diagonal matrix"/>
+    
+    <!-- 遥操作配置参数 -->
+    <arg name="teleop_on" default="false" doc="Start joystick teleop node"/> <!-- 是否启用手柄遥操作 -->
+    <arg name="joy_id" default="0" doc="ID of the joystick device"/> <!-- 手柄设备ID -->
+    <!-- 手柄轴映射配置 -->
+    <arg name="axis_yaw" default="0" doc="Joystick mapping for yaw angle input"/> <!-- 偏航角控制轴映射 -->
+    <arg name="axis_x" default="4" doc="Joystick mapping for X component of velocity reference input"/> <!-- X轴速度控制轴映射 -->
+    <arg name="axis_y" default="3" doc="Joystick mapping for Y component of velocity reference input"/> <!-- Y轴速度控制轴映射 -->
+    <arg name="axis_z" default="1" doc="Joystick mapping for Z component of velocity reference input"/> <!-- Z轴速度控制轴映射 -->
+
+    <!-- 推力器管理器配置 -->
+    <!-- 推力器管理器生成文件的输出目录 -->
+    <arg name="thruster_manager_output_dir" default="$(find rexrov2_control)/config" doc="Output directory for the generated thruster manager"/>
+    <!-- 推力器管理器配置文件路径 -->
+    <arg name="thruster_manager_config_file" default="$(find rexrov2_control)/config/thruster_manager.yaml" doc="File storing the configuration of the thruster manager"/>
+    <!-- 推力器分配矩阵文件路径 -->
+    <arg name="tam_file" default="$(find rexrov2_control)/config/TAM.yaml" doc="File storing the thruster allocation matrix"/>
+
+    <!-- 控制器模型参数文件 -->
+    <!-- 包含机器人重力、浮力、浮心、重心等恢复力相关参数的配置文件 -->
+    <arg name="model_params_file" default="$(find rexrov2_control)/config/model_params.yaml" doc="File storing the vehicle model parameters loaded by the controller"/>
+
+    <!-- 主控制器启动：PD控制器加恢复力补偿 -->
+    <include file="$(find uuv_trajectory_control)/launch/rov_pd_grav_compensation_controller.launch">
+      <!-- 机器人命名空间 -->
+      <arg name="uuv_name" value="$(arg uuv_name)"/>
+      <!-- 可视化开关 -->
+      <arg name="gui_on" value="$(arg gui_on)"/>
+      <!-- 控制输出饱和度限制 -->
+      <arg name="saturation" value="2000"/>
+      <!-- PD控制器增益参数 -->
+      <arg name="Kp" value="$(arg Kp)"/> <!-- 比例增益矩阵 -->
+      <arg name="Kd" value="$(arg Kd)"/> <!-- 微分增益矩阵 -->
+      <!-- 坐标系选择 -->
+      <arg name="use_ned_frame" value="$(arg use_ned_frame)"/>
+      <!-- 推力器管理相关配置 -->
+      <arg name="thruster_manager_output_dir" value="$(arg thruster_manager_output_dir)"/>
+      <arg name="thruster_manager_config_file" value="$(arg thruster_manager_config_file)"/>
+      <arg name="tam_file" value="$(arg tam_file)"/>
+      <!-- 机器人模型参数文件，特别用于恢复力补偿计算 -->
+      <arg name="model_params_file" value="$(arg model_params_file)"/>
+    </include>
+
+    <!-- 数据记录功能 -->
+    <!-- Initialize the recording fo the simulation according to the record flag  -->
+    <include file="$(find rexrov2_control)/launch/record_demo.launch">
+      <arg name="record" value="$(arg record)"/> <!-- 记录开关 -->
+      <arg name="use_ned_frame" value="$(arg use_ned_frame)"/> <!-- 坐标系选择 -->
+      <arg name="uuv_name" value="$(arg uuv_name)"/> <!-- 机器人名称 -->
+    </include>
+
+    <!-- 遥操作功能 -->
+    <group if="$(arg teleop_on)">
+      <!-- Start joystick teleop node  -->
+      <include file="$(find uuv_teleop)/launch/uuv_teleop.launch">
+          <arg name="uuv_name" value="$(arg uuv_name)"/> <!-- 机器人命名空间 -->
+          <arg name="joy_id" value="$(arg joy_id)"/> <!-- 手柄设备ID -->
+          <arg name="output_topic" value="cmd_vel"/> <!-- 输出控制指令的话题 -->
+          <arg name="message_type" value="twist"/> <!-- 消息类型：速度指令 -->
+          <!-- 手柄轴映射 -->
+          <arg name="axis_yaw" value="$(arg axis_yaw)"/> <!-- 偏航轴映射 -->
+          <arg name="axis_x" value="$(arg axis_x)"/> <!-- X轴映射 -->
+          <arg name="axis_y" value="$(arg axis_y)"/> <!-- Y轴映射 -->
+          <arg name="axis_z" value="$(arg axis_z)"/> <!-- Z轴映射 -->
+          <!-- 控制增益设置 -->
+          <arg name="gain_yaw" default="0.2"/> <!-- 偏航控制增益 -->
+          <arg name="gain_x" default="0.5"/> <!-- X轴控制增益 -->
+          <arg name="gain_y" default="0.5"/> <!-- Y轴控制增益 -->
+          <arg name="gain_z" default="0.5"/> <!-- Z轴控制增益 -->
+      </include>
+    </group>
+
+    <!-- 可视化功能 -->
+    <group if="$(arg gui_on)">
+      <!-- Start RViz  -->
+      <node name="rviz" pkg="rviz" type="rviz" output="screen" args="-d $(find rexrov2_control)/rviz/rexrov2_control.rviz"/>
+      <!-- 启动RViz并加载预设的RexROV2控制配置文件 -->
+    </group>
+</launch>

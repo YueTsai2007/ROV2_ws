@@ -1,0 +1,10 @@
+abc@abc:~$ rostopic pub /underwater_robot/thruster_manager/input geometry_msgs/Wrench "
+> force:
+>   x: 50.0
+>   y: 0.0
+>   z: 0.0
+> torque:
+>   x: 0.0
+>   y: 0.0
+>   z: 0.0" -r 10
+

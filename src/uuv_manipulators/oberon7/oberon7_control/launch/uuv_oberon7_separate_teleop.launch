@@ -1,0 +1,20 @@
+<launch>
+  <arg name="model_name" />
+  <arg name="uuv_name" default="$(arg model_name)"/>
+  <arg name="joy_id" default="0"/>
+
+  <include file="$(find oberon7_control)/launch/jt_cartesian_controller_without_joy.launch">
+    <arg name="uuv_name" value="$(arg uuv_name)" />
+    <arg name="joy_id" value="$(arg joy_id)"/>
+    <arg name="exclusion_button" default="4"/>
+    <arg name="deadman_button" default="5"/>
+  </include>
+
+  <include file="$(find uuv_control_cascaded_pid)/launch/joy_velocity_agdr.launch">
+    <arg name="model_name" value="$(arg model_name)"/>
+    <arg name="uuv_name" value="$(arg uuv_name)" />
+    <arg name="joy_id" value="$(arg joy_id)"/>
+    <arg name="exclusion_buttons" default="5"/>
+    <arg name="deadman_button" default="4"/>
+  </include>
+</launch>

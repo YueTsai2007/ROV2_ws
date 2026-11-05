@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Set graphics environment variables -->
+  <env name="SVGA_VGPU10" value="0" />
+  <env name="LIBGL_ALWAYS_SOFTWARE" value="1" />
+  
+  <!-- Start uuv_simulator underwater world（With GUI） -->
+  <include file="$(find uuv_gazebo_worlds)/launch/empty_underwater_world.launch">
+    <arg name="gui" value="true"/>
+    <arg name="paused" value="false"/>
+  </include>
+
+  <!-- Load robot description -->
+  <param name="robot_description" textfile="$(find underwater_robot)/urdf/underwater_robot.urdf" />
+  
+  <!-- Spawn underwater robot -->
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" 
+        args="-param robot_description -urdf -model underwater_robot -x 0 -y 0 -z -5" />
+  
+  <!-- Launch RVizView simultaneously -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find underwater_robot)/config/underwater.rviz" />
+  
+</launch>

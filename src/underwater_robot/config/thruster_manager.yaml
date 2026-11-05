@@ -1,0 +1,38 @@
+thruster_manager:
+  tf_prefix: underwater_robot
+  base_link: base_link
+  thruster_topic_prefix: thrusters/
+  thruster_topic_suffix: /input
+  thruster_frame_base: thruster_
+  max_thrust: 200.0
+  timeout: -1
+  update_rate: 50
+  conversion_fcn: proportional
+  conversion_fcn_params:
+    gain: 0.001
+
+thrusters:
+  thruster_1:
+    joint: J1
+    origin: [0.28826, 0.18, -0.10969]
+    direction: [0.86603, 0, 0.5]
+  thruster_2:
+    joint: J2
+    origin: [0.28826, 0.18, 0.10969]
+    direction: [0.86603, 0, -0.5]
+  thruster_3:
+    joint: J5
+    origin: [-0.14001, 0.33559, -0.125]
+    direction: [0, 1, 0]
+  thruster_4:
+    joint: J6
+    origin: [-0.14001, 0.33559, 0.125]
+    direction: [0, 1, 0]
+  thruster_5:
+    joint: J7
+    origin: [-0.28828, 0.18, 0.10969]
+    direction: [-0.86603, 0, -0.5]
+  thruster_6:
+    joint: J8
+    origin: [-0.28828, 0.18, -0.10969]
+    direction: [-0.86603, 0, 0.5]

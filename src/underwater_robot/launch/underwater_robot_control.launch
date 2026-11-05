@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="namespace" default="underwater_robot"/>
+  <arg name="uuv_name" default="underwater_robot"/>
+  
+  <!-- Launch PID controller -->
+  <include file="$(find uuv_control_cascaded_pid)/launch/joy_velocity.launch">
+    <arg name="uuv_name" value="$(arg uuv_name)"/>
+    <arg name="model_name" value="$(arg uuv_name)"/>
+  </include>
+  
+  <!-- Optional: launch keyboard control -->
+  <!-- <include file="$(find uuv_control_cascaded_pid)/launch/keyboard_velocity.launch">
+    <arg name="uuv_name" value="$(arg uuv_name)"/>
+    <arg name="model_name" value="$(arg uuv_name)"/>
+  </include> -->
+  
+</launch>

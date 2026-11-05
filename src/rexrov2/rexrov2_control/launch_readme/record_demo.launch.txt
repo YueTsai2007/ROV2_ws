@@ -1,0 +1,84 @@
+<!-- 
+启动`rosbag record`节点并记录RexROV2水下机器人的一组话题数据。
+该文件用于数据采集和实验记录，便于后续分析和算法验证。
+-->
+<launch>
+  <!-- 记录功能配置参数 -->
+  <arg name="record" default="false" doc="Starts the recording node if set to true"/> <!-- 记录开关：设置为true时启动数据记录节点 -->
+  <arg name="bag_filename" default="recording.bag" doc="Filename for the recording ROS bag"/> <!-- ROS数据包文件名：记录数据的存储文件名称 -->
+  <arg name="use_ned_frame" default="false" doc="If set to true, stores the odometry with respect to NED frame"/> <!-- 坐标系选择：true使用NED坐标系，false使用ENU坐标系 -->
+  <arg name="uuv_name" default="rexrov2" doc="Namespace of the vehicle"/> <!-- 机器人命名空间：用于多机器人场景下的数据隔离 -->
+
+  <!-- 条件启动数据记录节点 -->
+  <group if="$(arg record)">
+    <!-- 使用NED坐标系时的记录配置 -->
+    <!-- 记录机器人在NED(北-东-地)坐标系下的位姿和传感器数据 -->
+    <node pkg="rosbag" type="record" name="recording"
+      args="record -O $(arg bag_filename)
+        <!-- 控制器相关话题 -->
+        /$(arg uuv_name)/dp_controller/trajectory              <!-- 轨迹规划器输出的期望轨迹 -->
+        /$(arg uuv_name)/dp_controller/reference               <!-- 控制器参考输入指令 -->
+        
+        <!-- 定位与状态话题 -->
+        /$(arg uuv_name)/pose_gt_ned                           <!-- 在NED坐标系下的地面真实位姿（包含位置和姿态） -->
+        
+        <!-- 环境信息话题 -->
+        /hydrodynamics/current_velocity                        <!-- 海流速度信息，影响机器人动力学 -->
+        
+        <!-- 控制指令话题 -->
+        /$(arg uuv_name)/thruster_manager/input_stamped        <!-- 带时间戳的推力器管理器输入（广义力/力矩指令） -->
+        /$(arg uuv_name)/wrench_perturbation                   <!-- 外部扰动力和力矩（如波浪力、碰撞等） -->
+        
+        <!-- 推力器输出话题 - 实际推力 -->
+        /$(arg uuv_name)/thrusters/0/thrust                    <!-- 推力器0的实际推力输出 -->
+        /$(arg uuv_name)/thrusters/1/thrust                    <!-- 推力器1的实际推力输出 -->
+        /$(arg uuv_name)/thrusters/2/thrust                    <!-- 推力器2的实际推力输出 -->
+        /$(arg uuv_name)/thrusters/3/thrust                    <!-- 推力器3的实际推力输出 -->
+        /$(arg uuv_name)/thrusters/4/thrust                    <!-- 推力器4的实际推力输出 -->
+        /$(arg uuv_name)/thrusters/5/thrust                    <!-- 推力器5的实际推力输出 -->
+        
+        <!-- 推力器输入话题 - 控制指令 -->
+        /$(arg uuv_name)/thrusters/0/input                     <!-- 推力器0的控制输入指令 -->
+        /$(arg uuv_name)/thrusters/1/input                     <!-- 推力器1的控制输入指令 -->
+        /$(arg uuv_name)/thrusters/2/input                     <!-- 推力器2的控制输入指令 -->
+        /$(arg uuv_name)/thrusters/3/input                     <!-- 推力器3的控制输入指令 -->
+        /$(arg uuv_name)/thrusters/4/input                     <!-- 推力器4的控制输入指令 -->
+        /$(arg uuv_name)/thrusters/5/input                     <!-- 推力器5的控制输入指令 -->"
+      if="$(arg use_ned_frame)"/>
+
+    <!-- 使用ENU坐标系时的记录配置 -->
+    <!-- 记录机器人在ENU(东-北-天)坐标系下的位姿和传感器数据 -->
+    <node pkg="rosbag" type="record" name="recording"
+      args="record -O $(arg bag_filename)
+        <!-- 控制器相关话题 -->
+        /$(arg uuv_name)/dp_controller/trajectory              <!-- 轨迹规划器输出的期望轨迹 -->
+        /$(arg uuv_name)/dp_controller/reference               <!-- 控制器参考输入指令 -->
+        
+        <!-- 定位与状态话题 -->
+        /$(arg uuv_name)/pose_gt                               <!-- 在ENU坐标系下的地面真实位姿（Gazebo默认坐标系） -->
+        
+        <!-- 环境信息话题 -->
+        /hydrodynamics/current_velocity                        <!-- 海流速度信息 -->
+        
+        <!-- 控制指令话题 -->
+        /$(arg uuv_name)/thruster_manager/input_stamped        <!-- 带时间戳的推力器管理器输入 -->
+        /$(arg uuv_name)/wrench_perturbation                   <!-- 外部扰动力和力矩 -->
+        
+        <!-- 推力器输出话题 - 实际推力 -->
+        /$(arg uuv_name)/thrusters/0/thrust                    <!-- 推力器0的实际推力输出 -->
+        /$(arg uuv_name)/thrusters/1/thrust                    <!-- 推力器1的实际推力输出 -->
+        /$(arg uuv_name)/thrusters/2/thrust                    <!-- 推力器2的实际推力输出 -->
+        /$(arg uuv_name)/thrusters/3/thrust                    <!-- 推力器3的实际推力输出 -->
+        /$(arg uuv_name)/thrusters/4/thrust                    <!-- 推力器4的实际推力输出 -->
+        /$(arg uuv_name)/thrusters/5/thrust                    <!-- 推力器5的实际推力输出 -->
+        
+        <!-- 推力器输入话题 - 控制指令 -->
+        /$(arg uuv_name)/thrusters/0/input                     <!-- 推力器0的控制输入指令 -->
+        /$(arg uuv_name)/thrusters/1/input                     <!-- 推力器1的控制输入指令 -->
+        /$(arg uuv_name)/thrusters/2/input                     <!-- 推力器2的控制输入指令 -->
+        /$(arg uuv_name)/thrusters/3/input                     <!-- 推力器3的控制输入指令 -->
+        /$(arg uuv_name)/thrusters/4/input                     <!-- 推力器4的控制输入指令 -->
+        /$(arg uuv_name)/thrusters/5/input                     <!-- 推力器5的控制输入指令 -->"
+      unless="$(arg use_ned_frame)"/>
+  </group>
+</launch>

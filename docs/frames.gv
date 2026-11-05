@@ -1,0 +1,26 @@
+digraph G {
+"base_link" -> "Link3"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1762447219.499 sec old)\nBuffer length: 0.000 sec\n"];
+"base_link" -> "Link4"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1762447219.499 sec old)\nBuffer length: 0.000 sec\n"];
+"base_link" -> "Link9"[label="Broadcaster: /robot_state_publisher\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1762447219.499 sec old)\nBuffer length: 0.000 sec\n"];
+"world" -> "world_ned"[label="Broadcaster: /world_ned_frame_publisher\nAverage rate: 10000.000 Hz\nMost recent transform: 0.000 ( 1762447219.499 sec old)\nBuffer length: 0.000 sec\n"];
+"underwater_robot/base_link" -> "underwater_robot/base_link_ned"[label="Broadcaster: /gazebo\nAverage rate: 500.000 Hz\nMost recent transform: 59.608 ( 1762447159.891 sec old)\nBuffer length: 0.406 sec\n"];
+"base_link" -> "Link1"[label="Broadcaster: /robot_state_publisher\nAverage rate: 13.333 Hz\nMost recent transform: 59.572 ( 1762447159.927 sec old)\nBuffer length: 0.300 sec\n"];
+"base_link" -> "Link2"[label="Broadcaster: /robot_state_publisher\nAverage rate: 13.333 Hz\nMost recent transform: 59.572 ( 1762447159.927 sec old)\nBuffer length: 0.300 sec\n"];
+"base_link" -> "Link5"[label="Broadcaster: /robot_state_publisher\nAverage rate: 13.333 Hz\nMost recent transform: 59.572 ( 1762447159.927 sec old)\nBuffer length: 0.300 sec\n"];
+"base_link" -> "Link6"[label="Broadcaster: /robot_state_publisher\nAverage rate: 13.333 Hz\nMost recent transform: 59.572 ( 1762447159.927 sec old)\nBuffer length: 0.300 sec\n"];
+"base_link" -> "Link7"[label="Broadcaster: /robot_state_publisher\nAverage rate: 13.333 Hz\nMost recent transform: 59.572 ( 1762447159.927 sec old)\nBuffer length: 0.300 sec\n"];
+"base_link" -> "Link8"[label="Broadcaster: /robot_state_publisher\nAverage rate: 13.333 Hz\nMost recent transform: 59.572 ( 1762447159.927 sec old)\nBuffer length: 0.300 sec\n"];
+"base_link" -> "Link10"[label="Broadcaster: /robot_state_publisher\nAverage rate: 13.333 Hz\nMost recent transform: 59.572 ( 1762447159.927 sec old)\nBuffer length: 0.300 sec\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1762447219.499"[ shape=plaintext ] ;
+ }->"base_link";
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1762447219.499"[ shape=plaintext ] ;
+ }->"world";
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1762447219.499"[ shape=plaintext ] ;
+ }->"underwater_robot/base_link";
+}

@@ -1,0 +1,71 @@
+<!-- 
+启动RexROV2水下机器人的[推力器分配器节点](https://github.com/uuvsimulator/uuv_simulator/blob/master/uuv_control/uuv_thruster_manager/scripts/thruster_allocator.py)
+
+推力器分配器使用[推力器分配矩阵](https://github.com/uuvsimulator/rexrov2/blob/master/rexrov2_control/config/TAM.yaml)
+将来自`/<uuv_name>/thruster_manager/input`话题的[geometry_msgs/Wrench消息](https://docs.ros.org/lunar/api/geometry_msgs/html/msg/Wrench.html)
+转换为每个推力器单元的参考输入。
+
+> **创建或重置推力器分配矩阵**
+
+如果需要创建或重新计算推力器分配矩阵，请按以下步骤启动仿真：
+
+1. 启动Gazebo海洋环境仿真：
+roslaunch uuv_gazebo_worlds ocean_waves.launch
+
+2. 加载RexROV2机器人模型：
+roslaunch rexrov2_description upload_rexrov2.launch
+
+3. 启动推力器管理器并将reset_tam设置为true，文件将存储在tam_file输入提供的路径下：
+roslaunch rexrov2_control start_thruster_manager.launch reset_tam:=true
+
+> **使用示例**
+
+启动仿真，生成RexROV2水下机器人，然后启动推力器分配节点：
+
+1. 启动Gazebo海洋环境仿真：
+roslaunch uuv_gazebo_worlds ocean_waves.launch
+
+2. 加载RexROV2机器人模型：
+roslaunch rexrov2_description upload_rexrov2.launch
+
+3. 启动推力器管理器：
+roslaunch rexrov2_control start_thruster_manager.launch 
+
+!!! 注意
+    
+    控制器节点或类似节点必须在`/<uuv_name>/thruster_manager/input`话题上发布geometry_msgs/Wrench消息，
+    水下机器人才能移动。
+-->
+<launch>
+  <!-- 模型与命名空间配置 -->
+  <arg name="model_name" default="rexrov2" doc="水下机器人模型名称"/> <!-- 机器人模型名称，用于标识机器人类型 -->
+  <arg name="uuv_name" default="$(arg model_name)" doc="机器人实例的命名空间"/> <!-- 机器人实例的命名空间，支持多机器人场景 -->
+  <arg name="base_link" default="base_link" doc="基础连杆帧名称"/> <!-- 机器人基础连杆的坐标系名称，用于推力器位置参考 -->
+  <arg name="timeout" default="-1" /> <!-- 超时设置，-1表示无限等待 --> <!-- 推力器管理器启动超时时间，-1表示禁用超时 -->
+  
+  <!-- 推力器分配矩阵管理 -->
+  <arg name="reset_tam" default="false"/> <!-- 是否重置推力器分配矩阵 --> <!-- 设置为true时重新计算并保存推力器分配矩阵 -->
+  <arg name="output_dir" default="$(find rexrov2_control)/config"/> <!-- 输出文件目录 --> <!-- 生成的推力器管理器配置文件的输出目录 -->
+  <arg name="config_file" default="$(find rexrov2_control)/config/thruster_manager.yaml"/> <!-- 推力器管理器配置文件路径 --> <!-- 包含推力器配置、限制参数等设置的文件 -->
+  <arg name="tam_file" default="$(find rexrov2_control)/config/TAM.yaml"/> <!-- 推力器分配矩阵文件路径 --> <!-- 存储推力器分配矩阵的文件，定义广义力到单个推力器推力的映射 -->
+
+  <!-- 启动推力器管理器 -->
+  <include file="$(find uuv_thruster_manager)/launch/thruster_manager.launch">
+    <!-- 传递模型名称参数 -->
+    <arg name="model_name" value="$(arg model_name)"/>
+    <!-- 传递命名空间参数 -->
+    <arg name="uuv_name" value="$(arg uuv_name)"/>
+    <!-- 传递基础连杆帧名称 -->
+    <arg name="base_link" value="$(arg base_link)"/>
+    <!-- 传递超时设置 -->
+    <arg name="timeout" value="$(arg timeout)"/>
+    <!-- 传递推力器分配矩阵重置标志 -->
+    <arg name="reset_tam" value="$(arg reset_tam)"/>
+    <!-- 传递输出目录路径 -->
+    <arg name="output_dir" value="$(arg output_dir)"/>
+    <!-- 传递配置文件路径 -->
+    <arg name="config_file" value="$(arg config_file)"/>
+    <!-- 传递推力器分配矩阵文件路径 -->
+    <arg name="tam_file" value="$(arg tam_file)"/>
+   </include>
+</launch>

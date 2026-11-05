@@ -1,0 +1,13 @@
+<launch>
+  
+  <!-- 加载xacro文件并将其设置为robot_description参数 -->
+  <param name="robot_description" command="$(find xacro)/xacro '$(find uuv_with_hands_descriptions)/robots/rexrov_oberon_arms_with_hands.xacro' --inorder 
+          inertial_reference_frame:=world" />
+  
+  
+  
+    <!-- 添加机器人状态发布节点 -->
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" />
+    <node pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" name="joint_state_publisher_gui"  />
+    <node name="rviz" pkg="rviz" type="rviz" output="screen" />
+</launch>

@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Independent arm control -->
+  <node name="arm_controller" pkg="underwater_robot" type="arm_control_node.py" output="screen" 
+        respawn="true" respawn_delay="5"/>
+</launch>

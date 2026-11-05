@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="underwater_robot">
+
+  <!-- Include original URDF -->
+  <xacro:include filename="$(find underwater_robot)/urdf/underwater_robot.urdf"/>
+
+  <!-- Parameters -->
+  <xacro:arg name="namespace" default="underwater_robot"/>
+  
+  <!-- Add basic hydrodynamics plugin -->
+  <gazebo>
+    <plugin name="uuv_plugin" filename="libuuv_underwater_object_ros_plugin.so">
+      <fluid_density>1028.0</fluid_density>
+      <volume>0.02</volume>
+      <neutrally_buoyant>false</neutrally_buoyant>
+    </plugin>
+  </gazebo>
+
+</robot>

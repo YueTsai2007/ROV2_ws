@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="namespace" default="underwater_robot"/>
+  <arg name="x" default="0"/>
+  <arg name="y" default="0"/>
+  <arg name="z" default="-10"/>
+  <arg name="yaw" default="0.0"/>
+  
+  <!-- Launch underwater world -->
+  <include file="$(find uuv_gazebo_worlds)/launch/empty_underwater_world.launch">
+    <arg name="gui" value="true"/>
+    <arg name="paused" value="false"/>
+  </include>
+  
+  <!-- Load robot description -->
+  <group ns="$(arg namespace)">
+    <param name="robot_description" command="$(find xacro)/xacro '$(find underwater_robot)/urdf/underwater_robot_simple_hydro.xacro' namespace:=$(arg namespace)"/>
+  </group>
+  
+  <!-- 在Gazebo中Spawn robot -->
+  <node name="spawn_$(arg namespace)" pkg="gazebo_ros" type="spawn_model"
+        args="-urdf -param /$(arg namespace)/robot_description -model $(arg namespace) 
+              -x $(arg x) -y $(arg y) -z $(arg z) -Y $(arg yaw)"/>
+  
+  <!-- Publish robot state -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true">
+    <remap from="robot_description" to="/$(arg namespace)/robot_description" />
+    <remap from="joint_states" to="/$(arg namespace)/joint_states" />
+  </node>
+  
+  <!-- Launch joint state publisher -->
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <remap from="robot_description" to="/$(arg namespace)/robot_description" />
+    <remap from="joint_states" to="/$(arg namespace)/joint_states" />
+  </node>
+  
+</launch>

@@ -1,0 +1,55 @@
+<launch>
+  <!-- 基础配置参数 -->
+  <arg name="model_name" default="rexrov2" /> <!-- 机器人模型名称 -->
+  <arg name="uuv_name" default="$(arg model_name)"/> <!-- 机器人命名空间，默认为模型名称 -->
+  <arg name="joy_id" default="0"/> <!-- 手柄设备ID，默认为0 -->
+
+  <!-- 启动推力器管理器 -->
+  <!-- 负责将控制指令转换为各个推力器的具体推力输出 -->
+  <include file="$(find rexrov2_control)/launch/start_thruster_manager.launch">
+    <arg name="uuv_name" value="$(arg uuv_name)" /> <!-- 传递机器人命名空间 -->
+    <arg name="model_name" value="$(arg model_name)" /> <!-- 传递模型名称 -->
+  </include>
+
+  <!-- 创建机器人命名空间组，确保所有节点和参数都在该命名空间下 -->
+  <group ns="$(arg uuv_name)">
+    <!-- 加载惯性参数配置文件 -->
+    <!-- 包含机器人的质量、惯性矩等物理属性参数 -->
+    <rosparam file="$(find rexrov2_control)/config/inertial.yaml" command="load"/>
+    
+    <!-- 加载速度PID控制参数配置文件 -->
+    <!-- 包含速度控制环的PID增益参数 -->
+    <rosparam file="$(find rexrov2_control)/config/vel_pid_control.yaml" command="load"/>
+
+    <!-- 启动加速度控制节点 -->
+    <!-- 负责将速度误差转换为加速度指令 -->
+    <node pkg="uuv_control_cascaded_pid" type="AccelerationControl.py" name="acceleration_control"
+          output="screen">
+      <!-- 设置TF坐标变换前缀，确保多机器人场景下的坐标隔离 -->
+      <param name="tf_prefix" type="string" value="$(arg uuv_name)/" />
+    </node>
+
+    <!-- 启动速度控制节点 -->
+    <!-- 负责将位置/姿态误差转换为速度指令，是串级PID的外环 -->
+    <node pkg="uuv_control_cascaded_pid" type="VelocityControl.py" name="velocity_control"
+        output="screen">
+      <!-- 重映射里程计话题，使用地面真实位姿信息 -->
+      <remap from="odom" to="/$(arg uuv_name)/pose_gt"/>
+      <!-- 重映射加速度指令话题，连接到加速度控制节点的输出 -->
+      <remap from="cmd_accel" to="/$(arg uuv_name)/cmd_accel"/>
+    </node>
+  </group>
+
+  <!-- 启动遥操作系统 -->
+  <!-- 提供手柄控制功能，允许用户手动控制机器人 -->
+  <include file="$(find uuv_teleop)/launch/uuv_teleop.launch">
+    <arg name="uuv_name" value="$(arg uuv_name)"/> <!-- 机器人命名空间 -->
+    <arg name="joy_id" value="$(arg joy_id)"/> <!-- 手柄设备ID -->
+    <arg name="output_topic" value="cmd_vel"/> <!-- 输出速度控制指令的话题 -->
+    <arg name="message_type" value="twist"/> <!-- 消息类型：Twist速度指令 -->
+  </include>
+
+  <!-- 启动RViz可视化界面 -->
+  <!-- 提供机器人状态、传感器数据和控制效果的可视化显示 -->
+  <node name="rviz" pkg="rviz" type="rviz" output="screen" args="-d $(find rexrov2_control)/rviz/rexrov2_control.rviz"/>
+</launch>

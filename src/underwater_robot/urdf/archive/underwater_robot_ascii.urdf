@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<robot name="underwater_robot">
+  <link name="base_link">
+    <inertial>
+      <origin xyz="-0.003888 0.214798 0.000477" rpy="0 0 0" />
+      <mass value="21.96117" />
+      <inertia ixx="0.238951" ixy="-0.000060" ixz="0.000000" iyy="0.743447" iyz="0.000002" izz="0.621849" />
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://underwater_robot/meshes/base_link.STL" />
+      </geometry>
+      <material name="yellow">
+        <color rgba="0.988 1 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://underwater_robot/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <gazebo>
+    <plugin name="uuv_plugin" filename="libuuv_underwater_object_ros_plugin.so">
+      <fluid_density>1028.0</fluid_density>
+      <volume>0.05</volume>
+      <bbox_height>0.5</bbox_height>
+      <bbox_length>1.0</bbox_length>
+      <bbox_width>0.8</bbox_width>
+      <hydro_model_type>fossen</hydro_model_type>
+      <added_mass>
+        <x>30</x> <y>30</y> <z>30</z>
+        <roll>5</roll> <pitch>5</pitch> <yaw>5</yaw>
+      </added_mass>
+      <linear_damping>
+        <x>15</x> <y>15</y> <z>15</z>
+      </linear_damping>
+      <angular_damping>
+        <x>15</x> <y>15</y> <z>15</z>
+      </angular_damping>
+      <center_of_buoyancy>
+        <x>0</x> <y>0</y> <z>0.05</z>
+      </center_of_buoyancy>
+      <neutrally_buoyant>false</neutrally_buoyant>
+    </plugin>
+  </gazebo>
+</robot>

@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="underwater_robot">
+
+  <!-- 包含uuv_simulator的通用宏 -->
+  <xacro:include filename="$(find uuv_descriptions)/urdf/common.urdf.xacro"/>
+  
+  <!-- 包含原始URDF -->
+  <xacro:include filename="$(find underwater_robot)/urdf/underwater_robot.urdf"/>
+
+  <!-- 参数 -->
+  <xacro:arg name="namespace" default="underwater_robot"/>
+  
+  <!-- 添加uuv_simulator的水动力学插件 -->
+  <gazebo>
+    <plugin name="$(arg namespace)_hydrodynamics" filename="libuuv_underwater_object_ros_plugin.so">
+      <fluid_density>1028.0</fluid_density>
+      <volume>0.1</volume>
+      <bbox_height>0.5</bbox_height>
+      <bbox_length>1.0</bbox_length>
+      <bbox_width>0.8</bbox_width>
+      <hydro_model_type>fossen</hydro_model_type>
+      <added_mass>
+        <x>50</x> <y>50</y> <z>50</z>
+        <roll>10</roll> <pitch>10</pitch> <yaw>10</yaw>
+      </added_mass>
+      <linear_damping>
+        <x>20</x> <y>20</y> <z>20</z>
+      </linear_damping>
+      <linear_damping_forward_speed>
+        <x>0</x> <y>0</y> <z>0</z>
+      </linear_damping_forward_speed>
+      <angular_damping>
+        <x>20</x> <y>20</y> <z>20</z>
+      </angular_damping>
+      <center_of_buoyancy>
+        <x>0</x> <y>0</y> <z>0.1</z>
+      </center_of_buoyancy>
+      <center_of_buoyancy_damping>
+        <x>0</x> <y>0</y> <z>0</z>
+      </center_of_buoyancy_damping>
+      <neutrally_buoyant>false</neutrally_buoyant>
+      <radius>0.5</radius>
+    </plugin>
+  </gazebo>
+
+  <!-- 添加推进器配置 -->
+  <!-- 根据你的机器人结构，我们假设J1, J2, J5, J6, J7, J8关节可以作为推进器 -->
+  <xacro:thruster_macro namespace="$(arg namespace)" 
+                       thruster_name="thruster_front_left"
+                       parent_link="base_link"
+                       mass="0.1"
+                       origin_rpy="0 0 0"
+                       origin_xyz="0.28826 0.18 -0.10969"
+                       direction="0.866025 0 0.5"/>
+
+  <xacro:thruster_macro namespace="$(arg namespace)" 
+                       thruster_name="thruster_front_right" 
+                       parent_link="base_link"
+                       mass="0.1"
+                       origin_rpy="0 0 0"
+                       origin_xyz="0.28826 0.18 0.10969"
+                       direction="0.866025 0 -0.5"/>
+
+  <xacro:thruster_macro namespace="(arg namespace)" 
+                       thruster_name="thruster_back_left"
+                       parent_link="base_link"
+                       mass="0.1"
+                       origin_rpy="0 0 0"
+                       origin_xyz="-0.28828 0.18 -0.10969"
+                       direction="-0.86603 0 0.5"/>
+
+  <xacro:thruster_macro namespace="$(arg namespace)" 
+                       thruster_name="thruster_back_right"
+                       parent_link="base_link"
+                       mass="0.1"
+                       origin_rpy="0 0 0"
+                       origin_xyz="-0.28828 0.18 0.10969"
+                       direction="-0.86603 0 -0.5"/>
+
+</robot>

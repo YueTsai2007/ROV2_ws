@@ -1,0 +1,133 @@
+<!-- 
+启动RexROV2水下机器人的[非模型基于滑模控制器](https://github.com/uuvsimulator/uuv_simulator/blob/master/uuv_control/uuv_trajectory_control/scripts/rov_nmb_sm_controller.py)
+该控制器的默认参数K、Kd、Ki和slope使用[SMAC](https://github.com/automl/SMAC3)算法进行了优化
+
+使用示例：
+
+1. 启动Gazebo海洋环境仿真：
+roslaunch uuv_gazebo_worlds ocean_waves.launch
+
+2. 加载RexROV2机器人模型：
+roslaunch rexrov2_description upload_rexrov2.launch
+
+3. 启动滑模控制器：
+roslaunch rexrov2_control start_nmb_sm_controller.launch
+-->
+<launch>
+    <!-- 机器人命名空间，默认为rexrov2 -->
+    <arg name="uuv_name" default="rexrov2" doc="被控制机器车的命名空间"/>
+    <!-- 标志位：是否开始记录ROS数据包 -->
+    <arg name="record" default="false" doc="记录ROS数据包"/>
+    <!-- 标志位：是否启动Gazebo客户端和RViz -->
+    <arg name="gui_on" default="true" doc="启动Gazebo客户端和RViz"/>
+    <!-- 标志位：如果为true，参考坐标系设置为NED(北-东-地)，否则使用Gazebo默认的ENU(东-北-天) -->
+    <arg name="use_ned_frame" default="false" doc="如果为true，参考坐标系设置为NED，否则使用Gazebo默认的ENU"/>
+
+    <!-- 滑模控制器比例增益矩阵K的系数，对应6个自由度 -->
+    <arg name="K" default="5,5,5,5,5,5" doc="对角矩阵K的系数"/>
+    <!-- 滑模控制器微分增益矩阵Kd的系数，对应6个自由度 -->
+    <arg name="Kd" default="4490.0,4490.0,4490.0,19541.395,19541.395,19541.395" doc="对角矩阵Kd的系数"/>
+    <!-- 滑模控制器积分增益矩阵Ki的系数，对应6个自由度 -->
+    <arg name="Ki" default="0.1,0.1,0.1,0.476,0.476,0.476" doc="对角矩阵Ki的系数"/>
+    <!-- 滑模面斜率系数，对应6个自由度 -->
+    <arg name="slope" default="3.83,3.83,3.83,0.508,0.508,0.508" doc="对角矩阵α的斜率系数"/>
+
+    <!-- 标志位：是否启用手柄遥操作节点 -->
+    <arg name="teleop_on" default="false" doc="启动手柄遥操作节点"/>
+    <!-- 手柄设备ID -->
+    <arg name="joy_id" default="0" doc="手柄设备ID"/>
+    <!-- 手柄偏航角输入映射 -->
+    <arg name="axis_yaw" default="0" doc="手柄偏航角输入映射"/>
+    <!-- 手柄X轴速度参考输入映射 -->
+    <arg name="axis_x" default="4" doc="手柄X轴速度参考输入映射"/>
+    <!-- 手柄Y轴速度参考输入映射 -->
+    <arg name="axis_y" default="3" doc="手柄Y轴速度参考输入映射"/>
+    <!-- 手柄Z轴速度参考输入映射 -->
+    <arg name="axis_z" default="1" doc="手柄Z轴速度参考输入映射"/>
+
+    <!-- 最大前进速度限制，单位m/s -->
+    <arg name="max_forward_speed" default="0.5" doc="最大前进速度(m/s)"/>
+
+    <!-- 推力器管理器配置 -->
+    <!-- 生成的推力器管理器的输出目录 -->
+    <arg name="thruster_manager_output_dir" default="$(find rexrov2_control)/config" doc="生成的推力器管理器的输出目录"/>
+    <!-- 存储推力器管理器配置的文件 -->
+    <arg name="thruster_manager_config_file" default="$(find rexrov2_control)/config/thruster_manager.yaml" doc="存储推力器管理器配置的文件"/>
+    <!-- 存储推力器分配矩阵的文件 -->
+    <arg name="tam_file" default="$(find rexrov2_control)/config/TAM.yaml" doc="存储推力器分配矩阵的文件"/>
+
+    <!-- 启动非模型基于滑模控制器 -->
+    <include file="$(find uuv_trajectory_control)/launch/rov_nmb_sm_controller.launch">
+      <!-- 传递机器人命名空间 -->
+      <arg name="uuv_name" value="$(arg uuv_name)"/>
+      <!-- 传递GUI开启标志 -->
+      <arg name="gui_on" value="$(arg gui_on)"/>
+      <!-- 控制输出饱和度限制 -->
+      <arg name="saturation" value="2000"/>
+      <!-- 传递比例增益参数 -->
+      <arg name="K" value="$(arg K)"/>
+      <!-- 传递微分增益参数 -->
+      <arg name="Kd" value="$(arg Kd)"/>
+      <!-- 传递积分增益参数 -->
+      <arg name="Ki" value="$(arg Ki)"/>
+      <!-- 传递滑模面斜率参数 -->
+      <arg name="slope" value="$(arg slope)"/>
+      <!-- 传递坐标系选择标志 -->
+      <arg name="use_ned_frame" value="$(arg use_ned_frame)"/>
+      <!-- 传递推力器管理器输出目录 -->
+      <arg name="thruster_manager_output_dir" value="$(arg thruster_manager_output_dir)"/>
+      <!-- 传递推力器管理器配置文件 -->
+      <arg name="thruster_manager_config_file" value="$(arg thruster_manager_config_file)"/>
+      <!-- 传递推力器分配矩阵文件 -->
+      <arg name="tam_file" value="$(arg tam_file)"/>      
+      <!-- 传递最大前进速度 -->
+      <arg name="max_forward_speed" value="$(arg max_forward_speed)"/>
+    </include>
+
+    <!-- 根据record标志初始化仿真记录 -->
+    <include file="$(find rexrov2_control)/launch/record_demo.launch">
+      <!-- 传递记录标志 -->
+      <arg name="record" value="$(arg record)"/>
+      <!-- 传递坐标系选择标志 -->
+      <arg name="use_ned_frame" value="$(arg use_ned_frame)"/>
+      <!-- 传递机器人命名空间 -->
+      <arg name="uuv_name" value="$(arg uuv_name)"/>
+    </include>
+ 
+    <!-- 如果启用遥操作，启动手柄控制节点 -->
+    <group if="$(arg teleop_on)">
+      <!-- 启动手柄遥操作节点 -->
+      <include file="$(find uuv_teleop)/launch/uuv_teleop.launch">
+          <!-- 传递机器人命名空间 -->
+          <arg name="uuv_name" value="$(arg uuv_name)"/>
+          <!-- 传递手柄设备ID -->
+          <arg name="joy_id" value="$(arg joy_id)"/>
+          <!-- 设置输出话题名称 -->
+          <arg name="output_topic" value="cmd_vel"/>
+          <!-- 设置消息类型为速度指令 -->
+          <arg name="message_type" value="twist"/>
+          <!-- 传递手柄偏航轴映射 -->
+          <arg name="axis_yaw" value="$(arg axis_yaw)"/>
+          <!-- 传递手柄X轴映射 -->
+          <arg name="axis_x" value="$(arg axis_x)"/>
+          <!-- 传递手柄Y轴映射 -->
+          <arg name="axis_y" value="$(arg axis_y)"/>
+          <!-- 传递手柄Z轴映射 -->
+          <arg name="axis_z" value="$(arg axis_z)"/>
+          <!-- 设置偏航控制增益 -->
+          <arg name="gain_yaw" value="0.2"/>
+          <!-- 设置X轴控制增益 -->
+          <arg name="gain_x" value="0.5"/>
+          <!-- 设置Y轴控制增益 -->
+          <arg name="gain_y" value="0.5"/>
+          <!-- 设置Z轴控制增益 -->
+          <arg name="gain_z" value="0.5"/>
+      </include>
+    </group>
+
+    <!-- 如果启用GUI，启动RViz可视化 -->
+    <group if="$(arg gui_on)">
+      <!-- 启动RViz可视化界面 -->
+      <node name="rviz" pkg="rviz" type="rviz" output="screen" args="-d $(find rexrov2_control)/rviz/rexrov2_control.rviz"/>
+    </group>
+</launch>

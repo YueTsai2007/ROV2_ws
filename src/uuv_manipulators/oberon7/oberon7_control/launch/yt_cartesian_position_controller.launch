@@ -1,0 +1,32 @@
+<launch>
+  <!-- 定义参数 -->
+  <arg name="uuv_name" default="rexrov"/>
+  <arg name="arm_name" default="oberon7"/>
+
+  <!-- 初始化机械臂的关节控制器 -->
+  <include file="$(find oberon7_control)/launch/joint_effort_controllers.launch">
+    <arg name="uuv_name" value="$(arg uuv_name)"/>
+    <arg name="arm_name" value="$(arg arm_name)"/>
+  </include>
+
+  <!-- 启动动力学服务节点，设置两级命名空间 -->
+  <node name="kinematics_service" pkg="uuv_manipulators_kinematics" type="kinematics_service.py"
+    output="screen" ns="$(arg uuv_name)/$(arg arm_name)"/>
+
+  <!-- 启动雅克比转置控制器节点 (仅机械臂) -->
+  <!--node name="cartesian_controller" pkg="uuv_manipulators_control" type="yt_cartesian_position_controllers.py"
+    respawn="false" output="screen"-->
+    <node name="cartesian_controller" pkg="uuv_manipulators_control" type="yt_cartesian_position_controllers.py" ns="/rexrov/oberon7" output="screen">
+
+    <!--remap from="cmd_vel" to="jt_vel_input"/-->
+    <!-- 这里可以移除 Kp 和 Kd 的参数传递，直接在 Python 代码中定义了 -->
+    <rosparam subst_value="true">
+        publish_rate: 50  <!-- 控制器的发布速率 -->
+    </rosparam>
+  </node>
+
+</launch>
+
+
+
+

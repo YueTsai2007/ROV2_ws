@@ -1,0 +1,28 @@
+Panels:
+  - Class: rviz/Displays
+    Name: Displays
+  - Class: rviz/Selection
+    Name: Selection
+  - Class: rviz/Tool Properties
+    Name: Tool Properties
+  - Class: rviz/Views
+    Name: Views
+Visualization Manager:
+  Displays:
+    - Class: rviz/Grid
+      Name: Grid
+    - Class: rviz/TF
+      Name: TF
+      Frame Timeout: 15
+    - Class: rviz/RobotModel
+      Name: RobotModel
+      Description Topic: /robot_description
+      Visual Enabled: true
+      Collision Enabled: false
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: world
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Name: Current View

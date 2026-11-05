@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<robot name="underwater_robot">
+  
+  <!-- base_link - use box geometry -->
+  <link name="base_link">
+    <inertial>
+      <origin xyz="-0.00388812346992118 0.214797507718185 0.000476870940854357" rpy="0 0 0" />
+      <mass value="21.9611699884002" />
+      <inertia ixx="0.23895137440233" ixy="-6.02120687701648E-05" ixz="6.67278401351575E-08" iyy="0.743447355689122" iyz="1.63793544263822E-06" izz="0.621848783014161" />
+    </inertial>
+    <visual>
+      <geometry>
+        <box size="1.0 0.8 0.4"/>
+      </geometry>
+      <material name="yellow">
+        <color rgba="0.988 1 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="1.0 0.8 0.4"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Other links also use simple geometry -->
+  <link name="Link1">
+    <inertial>
+      <origin xyz="-0.284442084254638 0.0315351600726216 0.110185193232208" rpy="0 0 0" />
+      <mass value="26.1757475044251" />
+      <inertia ixx="0.694456523856631" ixy="0.0239708286389597" ixz="-0.00454179397071017" iyy="1.11839552637036" iyz="0.00257399094431449" izz="1.14010350472946" />
+    </inertial>
+    <visual>
+      <geometry>
+        <sphere radius="0.2"/>
+      </geometry>
+      <material name="gray">
+        <color rgba="0.752941 0.752941 0.752941 1" />
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <sphere radius="0.2"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="J1" type="continuous">
+    <origin xyz="0.288260052347553 0.179999999999991 -0.10968904997502" rpy="0 0 0" />
+    <parent link="base_link" />
+    <child link="Link1" />
+    <axis xyz="0.866025403784441 0 0.499999999999996" />
+  </joint>
+
+</robot>

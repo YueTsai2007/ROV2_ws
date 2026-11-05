@@ -1,0 +1,21 @@
+rostopic pub /underwater_robot/cmd_vel geometry_msgs/Twist "
+linear:
+  x: 1.5
+  y: 0.0
+  z: 0.0
+angular:
+  x: 0.0
+  y: 0.0
+  z: 0.0" -r 20
+
+#control_model
+rostopic pub /underwater_robot/automatic_on std_msgs/Bool "data: false" -1
+sleep 1
+rostopic pub /underwater_robot/automatic_on std_msgs/Bool "data: true" -r 10
+
+# 同时启用其他控制模式
+rostopic pub /underwater_robot/station_keeping_on std_msgs/Bool "data: true" -r 10
+rostopic pub /underwater_robot/trajectory_tracking_on std_msgs/Bool "data: true" -r 10
+
+#test thruster
+rostopic echo /underwater_robot/thruster_manager/input_stamped

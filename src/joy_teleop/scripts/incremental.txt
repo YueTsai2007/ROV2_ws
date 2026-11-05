@@ -1,0 +1,143 @@
+主要功能
+
+这个Python脚本实现了一个增量控制Action服务器，允许客户端通过增量方式来控制机械臂关节的位置。
+1. 核心组件
+
+Action服务器：
+python
+
+self._as = actionlib.SimpleActionServer("increment",
+                                        TTIA,  # IncrementAction
+                                        execute_cb=self._as_cb,
+                                        auto_start=False)
+
+命令发布器：
+python
+
+self._command_pub = rospy.Publisher("command",
+                                    JointTrajectory,
+                                    queue_size=1)
+
+2. 工作流程
+
+初始化阶段：
+python
+
+# 等待并获取当前关节状态
+state = rospy.wait_for_message("state", JTCS)
+self._value = state.actual.positions
+self._goal.joint_names = state.joint_names
+
+Action回调：
+python
+
+def _as_cb(self, goal):
+    self.increment_by(goal.increment_by)  # 执行增量控制
+    self._as.set_succeeded([])  # 标记Action完成
+
+3. 增量控制算法
+python
+
+def increment_by(self, increment):
+    # 获取当前实际位置
+    state = rospy.wait_for_message("state", JTCS)
+    self._value = state.actual.positions
+    
+    # 计算新目标位置：当前位置 + 增量
+    self._value = [x + y for x, y in zip(self._value, increment)]
+    
+    # 创建轨迹点
+    point = JointTrajectoryPoint()
+    point.positions = self._value
+    point.time_from_start = rospy.Duration(0.1)  # 100ms内到达目标
+    
+    # 发布轨迹命令
+    self._goal.points = [point]
+    self._command_pub.publish(self._goal)
+
+4. 消息类型
+
+使用的ROS消息：
+
+    trajectory_msgs/JointTrajectory：关节轨迹命令
+
+    control_msgs/JointTrajectoryControllerState：关节状态反馈
+
+    teleop_tools_msgs/IncrementAction：增量控制Action
+
+5. 控制特性
+
+增量式控制：
+
+    基于当前位置进行相对运动
+
+    避免绝对位置控制的复杂性
+
+    适合遥操作和逐步调整
+
+轨迹规划：
+python
+
+point.time_from_start = rospy.Duration(0.1)
+
+    设置100ms内完成运动
+
+    平滑的轨迹执行
+
+6. 应用场景
+
+这个增量控制器特别适合：
+
+    遥操作控制：操作员逐步调整机械臂位置
+
+    精细调整：对当前位置进行微小修正
+
+    交互式控制：通过GUI或手柄进行增量控制
+
+    安全操作：避免大幅度的突然运动
+
+7. 技术优势
+
+安全性：
+
+    基于当前位置的增量控制
+
+    避免超出关节限位
+
+    实时状态反馈
+
+灵活性：
+
+    支持多关节同时增量控制
+
+    可配置的运动时间
+
+    Action接口便于集成
+
+实时性：
+
+    快速的轨迹生成
+
+    低延迟的命令发布
+
+8. 在机械臂系统中的作用
+
+在整个控制架构中，这个服务器位于：
+text
+
+高级控制算法 → 增量Action服务器 → 关节轨迹控制器 → 机械臂执行
+
+9. 使用示例
+
+客户端可以通过以下方式使用：
+python
+
+# 创建Action客户端
+client = actionlib.SimpleActionClient('increment', TTIA)
+
+# 发送增量命令（例如所有关节增加0.1弧度）
+goal = TTIA()
+goal.increment_by = [0.1, 0.1, 0.1, 0.1, 0.1]
+client.send_goal(goal)
+
+这是一个非常实用的机械臂控制组件，为需要精细、渐进式控制的场景提供了方便的接口

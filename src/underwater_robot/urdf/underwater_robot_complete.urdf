@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<robot name="underwater_robot">
+
+  <!-- Original URDF content -->
+  <link name="base_link">
+    <inertial>
+      <origin xyz="-0.00388812346992118 0.214797507718185 0.000476870940854357" rpy="0 0 0" />
+      <mass value="21.9611699884002" />
+      <inertia ixx="0.23895137440233" ixy="-6.02120687701648E-05" ixz="6.67278401351575E-08" iyy="0.743447355689122" iyz="1.63793544263822E-06" izz="0.621848783014161" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://underwater_robot/meshes/base_link.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.988235294117647 1 0 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://underwater_robot/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Simplified test model - other links can be added here -->
+  
+  <!-- uuv_simulator hydrodynamics plugin -->
+  <gazebo>
+    <plugin name="uuv_plugin" filename="libuuv_underwater_object_ros_plugin.so">
+      <fluid_density>1028.0</fluid_density>
+      <volume>0.05</volume>
+      <bbox_height>0.5</bbox_height>
+      <bbox_length>1.0</bbox_length>
+      <bbox_width>0.8</bbox_width>
+      <hydro_model_type>fossen</hydro_model_type>
+      <added_mass>
+        <x>30</x> <y>30</y> <z>30</z>
+        <roll>5</roll> <pitch>5</pitch> <yaw>5</yaw>
+      </added_mass>
+      <linear_damping>
+        <x>15</x> <y>15</y> <z>15</z>
+      </linear_damping>
+      <angular_damping>
+        <x>15</x> <y>15</y> <z>15</z>
+      </angular_damping>
+      <center_of_buoyancy>
+        <x>0</x> <y>0</y> <z>0.05</z>
+      </center_of_buoyancy>
+      <neutrally_buoyant>false</neutrally_buoyant>
+    </plugin>
+  </gazebo>
+
+</robot>

@@ -1,0 +1,17 @@
+[0;1;32m●[0m snapd.service - Snappy daemon
+   Loaded: loaded (/lib/systemd/system/snapd.service; enabled; vendor preset: enabled)
+   Active: [0;1;32mactive (running)[0m since Wed 2025-11-05 21:56:21 CST; 8min ago
+ Main PID: 648 (snapd)
+    Tasks: 9 (limit: 4624)
+   CGroup: /system.slice/snapd.service
+           └─648 /usr/lib/snapd/snapd
+
+11月 05 21:56:17 abc systemd[1]: Starting Snappy daemon...
+11月 05 21:56:18 abc snapd[648]: AppArmor status: apparmor is enabled and all features are available
+11月 05 21:56:20 abc snapd[648]: overlord.go:271: Acquiring state lock file
+11月 05 21:56:20 abc snapd[648]: overlord.go:276: Acquired state lock file
+11月 05 21:56:20 abc snapd[648]: daemon.go:247: started snapd/2.61.4ubuntu0.16.04.1+esm1 (series 16; classic) ubuntu/18.04 (amd64) linux/4.15.0-213-generic.
+11月 05 21:56:20 abc snapd[648]: daemon.go:340: adjusting startup timeout by 1m35s (pessimistic estimate of 30s plus 5s per snap)
+11月 05 21:56:21 abc snapd[648]: backends.go:58: AppArmor status: apparmor is enabled and all features are available
+11月 05 21:56:21 abc systemd[1]: Started Snappy daemon.
+11月 05 22:01:30 abc snapd[648]: storehelpers.go:791: cannot refresh: snap has no updates available: "bare", "code", "core", "core20", "core24", "gnome-3-26-1604", "gnome-46-2404", "gnome-calculator", "gnome-characters", "gnome-logs", "gnome-system-monitor", "gtk-common-themes", "mesa-2404"

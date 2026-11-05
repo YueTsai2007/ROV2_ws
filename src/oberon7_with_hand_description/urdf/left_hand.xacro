@@ -1,0 +1,1102 @@
+<?xml version="1.0"?>
+<!-- Copyright (c) 2016 The UUV Simulator Authors.
+     All rights reserved.
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!-- Ground base -->
+<!--
+    <link name="${namespace}/end_effector">
+        <xacro:link_box_inertial mass="${total_mass * gripper_base_volume / total_volume}"
+                    width="${gripper_base_width}"
+                    length="${gripper_base_length}"
+                    height="${gripper_base_height}">
+        <origin xyz="${gripper_base_com}" rpy="0 0 0"/>
+        </xacro:link_box_inertial>
+
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="file://$(find oberon7_with_hand_description)/meshes/parallel_gripper/visual/BaseGripper.dae"/>
+            </geometry>
+        </visual>
+
+        <collision>
+            <origin xyz="${gripper_base_com}" rpy="0 0 0"/>
+            <geometry>
+                <box size="${gripper_base_length} ${gripper_base_width} ${gripper_base_height}"/>
+            </geometry>
+        </collision>
+    </link>
+-->
+    <joint name="${namespace}/wrist" type="revolute">
+      <parent link="${namespace}/wrist_link"/>
+      <child link="${namespace}/hand_palm"/>
+       <origin xyz="0.19504 0 0" rpy="0 0 ${-PI*0.5}"/>
+      <axis xyz="0 1 0"/>
+      <dynamics damping="10" friction="5"/>
+      <limit effort="10" lower="${-2*PI}" upper="${2*PI}" velocity="${gripper_velocity}"/>
+    </joint>
+
+    <xacro:simple_transmission joint="${namespace}/wrist" />
+
+    <!-- Finger left  
+
+    <link name="${namespace}/finger_left">
+        <xacro:link_box_inertial mass="${total_mass * finger_volume / total_volume}"
+                    width="${finger_width}"
+                    length="${finger_length}"
+                    height="${finger_height}">
+        <origin xyz="${finger_com}" rpy="0 0 0"/>
+        </xacro:link_box_inertial>
+
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="file://$(find oberon7_with_hand_description)/meshes/parallel_gripper/visual/Finger.dae"/>
+            </geometry>
+        </visual>
+
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="file://$(find oberon7_with_hand_description)/meshes/parallel_gripper/visual/Finger.dae"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="${namespace}/finger_left_joint" type="revolute">
+        <parent link="${namespace}/end_effector"/>
+        <child link="${namespace}/finger_left"/>
+        <origin xyz="0.0444267 0.0391376 0" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <dynamics damping="5" friction="10"/>
+        <limit effort="${gripper_effort}" lower="0" upper="${PI*0.3333}" velocity="${gripper_velocity}"/>
+    </joint>
+
+    <xacro:simple_transmission joint="${namespace}/finger_left_joint" />
+-->
+    <!-- Finger tip left  
+
+    <link name="${namespace}/finger_tip_left">
+        <xacro:link_box_inertial mass="${total_mass * finger_tip_volume / total_volume}"
+                    width="${finger_tip_width}"
+                    length="${finger_tip_length}"
+                    height="${finger_tip_height}">
+        <origin xyz="${finger_tip_com}" rpy="0 0 0"/>
+        </xacro:link_box_inertial>
+
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="file://$(find oberon7_with_hand_description)/meshes/parallel_gripper/visual/FingerTip.dae"/>
+            </geometry>
+        </visual>
+
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="file://$(find oberon7_with_hand_description)/meshes/parallel_gripper/visual/FingerTip.dae"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="${namespace}/finger_tip_left_joint" type="revolute">
+        <parent link="${namespace}/finger_left"/>
+        <child link="${namespace}/finger_tip_left"/>
+        <origin xyz="0.06431 0 0" rpy="${PI} 0 0"/>
+        <axis xyz="0 0 1"/>
+        <dynamics damping="5" friction="10"/>
+        <limit effort="0" lower="0" upper="0" velocity="0"/>
+    </joint>
+-->
+    <!-- Finger right  
+
+    <link name="${namespace}/finger_right">
+        <xacro:link_box_inertial mass="${total_mass * finger_volume / total_volume}"
+                    width="${finger_width}"
+                    length="${finger_length}"
+                    height="${finger_height}">
+        <origin xyz="${finger_com}" rpy="0 0 0"/>
+        </xacro:link_box_inertial>
+
+        <visual>
+            <origin xyz="0 0 0" rpy="${PI} 0 0"/>
+            <geometry>
+                <mesh filename="file://$(find oberon7_with_hand_description)/meshes/parallel_gripper/visual/Finger.dae"/>
+            </geometry>
+        </visual>
+
+        <collision>
+            <origin xyz="0 0 0" rpy="${PI} 0 0"/>
+            <geometry>
+                <mesh filename="file://$(find oberon7_with_hand_description)/meshes/parallel_gripper/visual/Finger.dae"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="${namespace}/finger_right_joint" type="revolute">
+        <parent link="${namespace}/end_effector"/>
+        <child link="${namespace}/finger_right"/>
+        <origin xyz="0.0444267 -0.0391376 0" rpy="${PI} ${PI} ${PI}"/>
+        <axis xyz="0 0 -1"/>
+        <dynamics damping="5" friction="10"/>
+        <limit effort="${gripper_effort}" lower="0" upper="${PI*0.3333}" velocity="${gripper_velocity}"/>
+    </joint>
+
+    <xacro:simple_transmission joint="${namespace}/finger_right_joint" />
+-->
+    <!-- Finger tip right  
+
+    <link name="${namespace}/finger_tip_right">
+        <xacro:link_box_inertial mass="${total_mass * finger_tip_volume / total_volume}"
+                    width="${finger_tip_width}"
+                    length="${finger_tip_length}"
+                    height="${finger_tip_height}">
+        <origin xyz="${finger_tip_com}" rpy="0 0 0"/>
+        </xacro:link_box_inertial>
+
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="file://$(find oberon7_with_hand_description)/meshes/parallel_gripper/visual/FingerTip.dae"/>
+            </geometry>
+        </visual>
+
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="file://$(find oberon7_with_hand_description)/meshes/parallel_gripper/visual/FingerTip.dae"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="${namespace}/finger_tip_right_joint" type="revolute">
+        <parent link="${namespace}/finger_right"/>
+        <child link="${namespace}/finger_tip_right"/>
+        <origin xyz="0.06431 0 0" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <dynamics damping="5" friction="10"/>
+        <limit effort="0" lower="0" upper="0" velocity="0"/>
+    </joint>
+-->
+
+    <link
+    name="${namespace}/hand_palm">
+    <inertial>
+      <origin
+        xyz="0.00130478076395992 0.0596522964009913 -0.00449739614969996"
+        rpy="0 0 0" />
+      <mass
+        value="0.156663158752545" />
+      <inertia
+        ixx="0.000188296029923588"
+        ixy="-1.13983474046367E-06"
+        ixz="5.12168023046119E-06"
+        iyy="0.000154447535709315"
+        iyz="-3.01363092497891E-06"
+        izz="9.52727425069162E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="${namespace}/link1_1">
+    <inertial>
+      <origin
+        xyz="-0.0342387700579409 -0.0211051503973073 0.000584019108471539"
+        rpy="0 0 0" />
+      <mass
+        value="0.0266574290469725" />
+      <inertia
+        ixx="2.86721787460506E-06"
+        ixy="-1.16248809016043E-09"
+        ixz="1.34631202647825E-07"
+        iyy="3.28373687173727E-06"
+        iyz="2.48522537659542E-09"
+        izz="3.25113623285701E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link1_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link1_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="${namespace}/joint_1_1"
+    type="continuous">
+    <origin
+      xyz="0.0070319 0.093002 0.033949"
+      rpy="0 0 -1.5708" />
+    <parent
+      link="${namespace}/hand_palm" />
+    <child
+      link="${namespace}/link1_1" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <xacro:simple_transmission joint="${namespace}/joint_1_1" />
+  <link
+    name="${namespace}/link1_2">
+    <inertial>
+      <origin
+        xyz="0.000282422351168023 -0.00809714341788753 -0.0263504977628591"
+        rpy="0 0 0" />
+      <mass
+        value="0.0174114298594221" />
+      <inertia
+        ixx="2.06659993509173E-06"
+        ixy="-1.29708365225143E-08"
+        ixz="-8.10529293262487E-16"
+        iyy="1.44163680821024E-06"
+        iyz="-1.52313927419708E-16"
+        izz="2.5669965872457E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link1_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link1_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="${namespace}/joint_1_2"
+    type="continuous">
+    <origin
+      xyz="-0.0375 -0.0253 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="${namespace}/link1_1" />
+    <child
+      link="${namespace}/link1_2" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <xacro:simple_transmission joint="${namespace}/joint_1_2" />
+  <link
+    name="${namespace}/link1_3">
+    <inertial>
+      <origin
+        xyz="-0.00519618067706268 0.0317383378104511 -0.000212595690889442"
+        rpy="0 0 0" />
+      <mass
+        value="0.0231301817063041" />
+      <inertia
+        ixx="2.39233194510332E-06"
+        ixy="1.59753729782254E-16"
+        ixz="-1.29708492295883E-08"
+        iyy="3.35262774634623E-06"
+        iyz="-8.58323039906741E-16"
+        izz="2.52507019571819E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link1_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link1_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="${namespace}/joint_1_3"
+    type="continuous">
+    <origin
+      xyz="0 -0.015 -0.0275"
+      rpy="3.1416 1.5708 0" />
+    <parent
+      link="${namespace}/link1_2" />
+    <child
+      link="${namespace}/link1_3" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <xacro:simple_transmission joint="${namespace}/joint_1_3" />
+  <link
+    name="${namespace}/link1_4">
+    <inertial>
+      <origin
+        xyz="-0.0281709533919971 0.000866396186994852 -8.02055282085601E-08"
+        rpy="0 0 0" />
+      <mass
+        value="0.0166433509527742" />
+      <inertia
+        ixx="1.65219055723145E-06"
+        ixy="9.48341688710135E-08"
+        ixz="-1.18389644400652E-11"
+        iyy="3.2071470195784E-06"
+        iyz="1.24598966431737E-11"
+        izz="2.73157094027593E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link1_4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link1_4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="${namespace}/joint_1_4"
+    type="continuous">
+    <origin
+      xyz="0 0.038 0"
+      rpy="0 0 -1.5708" />
+    <parent
+      link="${namespace}/link1_3" />
+    <child
+      link="${namespace}/link1_4" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <xacro:simple_transmission joint="${namespace}/joint_1_4" />
+  <link
+    name="${namespace}/link2_1">
+    <inertial>
+      <origin
+        xyz="-0.0342387700579409 -0.0211051503973073 0.000584019108471528"
+        rpy="0 0 0" />
+      <mass
+        value="0.0266574290469725" />
+      <inertia
+        ixx="2.86721787460506E-06"
+        ixy="-1.16248809016048E-09"
+        ixz="1.34631202647825E-07"
+        iyy="3.28373687173726E-06"
+        iyz="2.48522537659513E-09"
+        izz="3.25113623285701E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link2_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link2_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="${namespace}/joint_2_1"
+    type="continuous">
+    <origin
+      xyz="0.0070319 0.093002 -0.0054509"
+      rpy="0 0 -1.5708" />
+    <parent
+      link="${namespace}/hand_palm" />
+    <child
+      link="${namespace}/link2_1" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <xacro:simple_transmission joint="${namespace}/joint_2_1" />
+  <link
+    name="${namespace}/link2_2">
+    <inertial>
+      <origin
+        xyz="0.000282422351168019 -0.00809714341788748 -0.0263504977628591"
+        rpy="0 0 0" />
+      <mass
+        value="0.0174114298594221" />
+      <inertia
+        ixx="2.06659993509173E-06"
+        ixy="-1.29708365225145E-08"
+        ixz="-8.10529186370558E-16"
+        iyy="1.44163680821024E-06"
+        iyz="-1.52313865042166E-16"
+        izz="2.5669965872457E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link2_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link2_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="${namespace}/joint_2_2"
+    type="continuous">
+    <origin
+      xyz="-0.0375 -0.0253 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="${namespace}/link2_1" />
+    <child
+      link="${namespace}/link2_2" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <xacro:simple_transmission joint="${namespace}/joint_2_2" />
+  <link
+    name="${namespace}/link2_3">
+    <inertial>
+      <origin
+        xyz="-0.00519618067706268 0.0317383378104511 -0.000212595690889439"
+        rpy="0 0 0" />
+      <mass
+        value="0.0231301817063041" />
+      <inertia
+        ixx="2.39233194510332E-06"
+        ixy="1.59753609074888E-16"
+        ixz="-1.29708492295882E-08"
+        iyy="3.35262774634623E-06"
+        iyz="-8.58322142824759E-16"
+        izz="2.52507019571819E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link2_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link2_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="${namespace}/joint_2_3"
+    type="continuous">
+    <origin
+      xyz="0 -0.015 -0.0275"
+      rpy="3.1416 1.5708 0" />
+    <parent
+      link="${namespace}/link2_2" />
+    <child
+      link="${namespace}/link2_3" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <xacro:simple_transmission joint="${namespace}/joint_2_3" />
+  <link
+    name="${namespace}/link2_4">
+    <inertial>
+      <origin
+        xyz="-0.0281709533919972 0.000866396186994857 -8.02055282085601E-08"
+        rpy="0 0 0" />
+      <mass
+        value="0.0166433509527743" />
+      <inertia
+        ixx="1.65219055723145E-06"
+        ixy="9.48341688710114E-08"
+        ixz="-1.1838964440451E-11"
+        iyy="3.20714701957841E-06"
+        iyz="1.24598966433791E-11"
+        izz="2.73157094027593E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link2_4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link2_4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="${namespace}/joint_2_4"
+    type="continuous">
+    <origin
+      xyz="0 0.038 0"
+      rpy="0 0 -1.5708" />
+    <parent
+      link="${namespace}/link2_3" />
+    <child
+      link="${namespace}/link2_4" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <xacro:simple_transmission joint="${namespace}/joint_2_4" />
+  <link
+    name="${namespace}/link3_1">
+    <inertial>
+      <origin
+        xyz="-0.0342387700579409 -0.0211051503973073 0.000584019108471542"
+        rpy="0 0 0" />
+      <mass
+        value="0.0266574290469725" />
+      <inertia
+        ixx="2.86721787460507E-06"
+        ixy="-1.16248809015856E-09"
+        ixz="1.34631202647817E-07"
+        iyy="3.28373687173727E-06"
+        iyz="2.4852253765999E-09"
+        izz="3.25113623285702E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link3_1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link3_1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="${namespace}/joint_3_1"
+    type="continuous">
+    <origin
+      xyz="0.0070319 0.093002 -0.048451"
+      rpy="0 0 -1.5708" />
+    <parent
+      link="${namespace}/hand_palm" />
+    <child
+      link="${namespace}/link3_1" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <xacro:simple_transmission joint="${namespace}/joint_3_1" />
+  <link
+    name="${namespace}/link3_2">
+    <inertial>
+      <origin
+        xyz="0.00028242235116803 -0.0080971434178875 -0.0263504977628591"
+        rpy="0 0 0" />
+      <mass
+        value="0.0174114298594221" />
+      <inertia
+        ixx="2.06659993509173E-06"
+        ixy="-1.29708365225153E-08"
+        ixz="-8.10529529122834E-16"
+        iyy="1.44163680821024E-06"
+        iyz="-1.52313549988667E-16"
+        izz="2.5669965872457E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link3_2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link3_2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="${namespace}/joint_3_2"
+    type="continuous">
+    <origin
+      xyz="-0.0375 -0.0253 0"
+      rpy="1.5708 1.5708 0" />
+    <parent
+      link="${namespace}/link3_1" />
+    <child
+      link="${namespace}/link3_2" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <xacro:simple_transmission joint="${namespace}/joint_3_2" />
+  <link
+    name="${namespace}/link3_3">
+    <inertial>
+      <origin
+        xyz="-0.00519618067706268 0.031738337810451 -0.000212595690889425"
+        rpy="0 0 0" />
+      <mass
+        value="0.0231301817063041" />
+      <inertia
+        ixx="2.39233194510333E-06"
+        ixy="1.59750959426454E-16"
+        ixz="-1.29708492295829E-08"
+        iyy="3.35262774634624E-06"
+        iyz="-8.58316347002498E-16"
+        izz="2.52507019571819E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link3_3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link3_3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="${namespace}/joint_3_3"
+    type="continuous">
+    <origin
+      xyz="0 -0.015 -0.0275"
+      rpy="3.1416 1.5708 0" />
+    <parent
+      link="${namespace}/link3_2" />
+    <child
+      link="${namespace}/link3_3" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <xacro:simple_transmission joint="${namespace}/joint_3_3" />
+  <link
+    name="${namespace}/link3_4">
+    <inertial>
+      <origin
+        xyz="-0.0281709533919972 0.00086639618699484 -8.02055281773351E-08"
+        rpy="0 0 0" />
+      <mass
+        value="0.0166433509527742" />
+      <inertia
+        ixx="1.65219055723144E-06"
+        ixy="9.48341688710149E-08"
+        ixz="-1.1838964457439E-11"
+        iyy="3.20714701957839E-06"
+        iyz="1.24598966393226E-11"
+        izz="2.73157094027592E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link3_4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/link3_4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="${namespace}/joint_3_4"
+    type="continuous">
+    <origin
+      xyz="0 0.038 0"
+      rpy="0 0 -1.5708" />
+    <parent
+      link="${namespace}/link3_3" />
+    <child
+      link="${namespace}/link3_4" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+  <xacro:simple_transmission joint="${namespace}/joint_3_4" />
+  <link
+    name="${namespace}/Thumb_link1">
+    <inertial>
+      <origin
+        xyz="0.0069028565821123 0.000282422394270149 -0.0263504977628591"
+        rpy="0 0 0" />
+      <mass
+        value="0.0174114298594221" />
+      <inertia
+        ixx="1.44163680821023E-06"
+        ixy="-1.2970848720935E-08"
+        ixz="-1.52313683752906E-16"
+        iyy="2.06659993509173E-06"
+        iyz="8.10528719802147E-16"
+        izz="2.56699658724569E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/Thumb_link1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/Thumb_link1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="${namespace}/Thumb_joint1"
+    type="continuous">
+    <origin
+      xyz="0.011532 0.04302 0.034749"
+      rpy="1.5708 0 -3.1416" />
+    <parent
+      link="${namespace}/hand_palm" />
+    <child
+      link="${namespace}/Thumb_link1" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <xacro:simple_transmission joint="${namespace}/Thumb_joint1" />
+  <link
+    name="${namespace}/Thumb_link2">
+    <inertial>
+      <origin
+        xyz="-8.72010796904021E-14 -7.75372821504305E-13 -0.0214231642168965"
+        rpy="0 0 0" />
+      <mass
+        value="0.00252675252906817" />
+      <inertia
+        ixx="5.77184583242809E-07"
+        ixy="5.70167122237E-16"
+        ixz="-3.05403340602379E-18"
+        iyy="2.13320666827461E-07"
+        iyz="-3.26212329124332E-17"
+        izz="5.37570205610953E-07" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/Thumb_link2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/Thumb_link2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="${namespace}/Thumb_joint2"
+    type="continuous">
+    <origin
+      xyz="0 0 -0.0275"
+      rpy="1.5708 -1.5708 0" />
+    <parent
+      link="${namespace}/Thumb_link1" />
+    <child
+      link="${namespace}/Thumb_link2" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <xacro:simple_transmission joint="${namespace}/Thumb_joint2" />
+  <link
+    name="${namespace}/Thumb_link3">
+    <inertial>
+      <origin
+        xyz="-0.00124367605142797 -0.0133434457753055 -0.000322062496222752"
+        rpy="0 0 0" />
+      <mass
+        value="0.0224087739767107" />
+      <inertia
+        ixx="3.27242135038414E-06"
+        ixy="1.3066494241529E-07"
+        ixz="-1.90700415826834E-08"
+        iyy="2.44954983027333E-06"
+        iyz="1.91950391144031E-08"
+        izz="2.58041455104423E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/Thumb_link3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/Thumb_link3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="${namespace}/Thumb_joint3"
+    type="continuous">
+    <origin
+      xyz="0 0 -0.0315"
+      rpy="1.5708 0 0" />
+    <parent
+      link="${namespace}/Thumb_link2" />
+    <child
+      link="${namespace}/Thumb_link3" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <xacro:simple_transmission joint="${namespace}/Thumb_joint3" />
+  <link
+    name="${namespace}/Thumb_link4">
+    <inertial>
+      <origin
+        xyz="-0.000203162454647063 -0.0271211630075893 -0.000186815314101618"
+        rpy="0 0 0" />
+      <mass
+        value="0.0386202297448952" />
+      <inertia
+        ixx="6.96989531064848E-06"
+        ixy="7.47832794367386E-07"
+        ixz="-3.34981867787831E-08"
+        iyy="4.04003722651406E-06"
+        iyz="5.89516970733968E-08"
+        izz="6.28674157407823E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/Thumb_link4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find oberon7_with_hand_description)/meshes/left_hand/Thumb_link4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="${namespace}/Thumb_joint4"
+    type="continuous">
+    <origin
+      xyz="0 -0.0465 0"
+      rpy="0 0 0" />
+    <parent
+      link="${namespace}/Thumb_link3" />
+    <child
+      link="${namespace}/Thumb_link4" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <xacro:simple_transmission joint="${namespace}/Thumb_joint4" />
+
+
+</robot>

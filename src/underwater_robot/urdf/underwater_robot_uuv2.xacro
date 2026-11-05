@@ -1,0 +1,142 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="underwater_robot">
+
+  <!-- Define xacro parameters -->
+  <xacro:arg name="namespace" default="underwater_robot"/>
+  <xacro:arg name="debug" default="0"/>
+  <xacro:arg name="inertial_reference_frame" default="world"/>
+
+  <!-- Include original URDF content -->
+  <xacro:include filename="$(find underwater_robot)/urdf/underwater_robot.urdf" />
+
+  <!-- Add underwater physics plugin -->
+  <gazebo>
+    <plugin name="uuv_plugin" filename="libuuv_underwater_object_ros_plugin.so">
+      <namespace>$(arg namespace)</namespace>
+      <link_name>base_link</link_name>
+      <neutrally_buoyant>false</neutrally_buoyant>
+      <buoyancy_force>215.0</buoyancy_force>
+      <volume>0.021</volume>
+      <fluid_density>1028.0</fluid_density>
+      <center_of_buoyancy>0 0 0.1</center_of_buoyancy>
+      
+      <hydrodynamic_model>
+        <type>fossen</type>
+        <added_mass>20 20 20 10 10 10</added_mass>
+        <linear_damping>70 70 70 50 50 50</linear_damping>
+        <linear_damping_forward_speed>0 0 0 0 0 0</linear_damping_forward_speed>
+        <quadratic_damping>100 100 100 80 80 80</quadratic_damping>
+      </hydrodynamic_model>
+    </plugin>
+  </gazebo>
+
+  <!-- Thruster plugins - using different configs to avoid conflicts -->
+  <gazebo>
+    <plugin name="thruster_j1" filename="libuuv_thruster_ros_plugin.so">
+      <linkName>base_link</linkName>
+      <jointName>J1</jointName>
+      <thrusterID>1</thrusterID>
+      <topicName>thrusters/1/input</topicName>
+      <dynamics>
+        <type>FirstOrder</type>
+        <timeConstant>0.2</timeConstant>
+        <gain>1.0</gain>
+      </dynamics>
+      <conversion>
+        <type>Basic</type>
+        <rotorConstant>1.0</rotorConstant>
+      </conversion>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="thruster_j2" filename="libuuv_thruster_ros_plugin.so">
+      <linkName>base_link</linkName>
+      <jointName>J2</jointName>
+      <thrusterID>2</thrusterID>
+      <topicName>thrusters/2/input</topicName>
+      <dynamics>
+        <type>FirstOrder</type>
+        <timeConstant>0.2</timeConstant>
+        <gain>1.0</gain>
+      </dynamics>
+      <conversion>
+        <type>Basic</type>
+        <rotorConstant>1.0</rotorConstant>
+      </conversion>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="thruster_j5" filename="libuuv_thruster_ros_plugin.so">
+      <linkName>base_link</linkName>
+      <jointName>J5</jointName>
+      <thrusterID>5</thrusterID>
+      <topicName>thrusters/5/input</topicName>
+      <dynamics>
+        <type>FirstOrder</type>
+        <timeConstant>0.2</timeConstant>
+        <gain>1.0</gain>
+      </dynamics>
+      <conversion>
+        <type>Basic</type>
+        <rotorConstant>1.0</rotorConstant>
+      </conversion>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="thruster_j6" filename="libuuv_thruster_ros_plugin.so">
+      <linkName>base_link</linkName>
+      <jointName>J6</jointName>
+      <thrusterID>6</thrusterID>
+      <topicName>thrusters/6/input</topicName>
+      <dynamics>
+        <type>FirstOrder</type>
+        <timeConstant>0.2</timeConstant>
+        <gain>1.0</gain>
+      </dynamics>
+      <conversion>
+        <type>Basic</type>
+        <rotorConstant>1.0</rotorConstant>
+      </conversion>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="thruster_j7" filename="libuuv_thruster_ros_plugin.so">
+      <linkName>base_link</linkName>
+      <jointName>J7</jointName>
+      <thrusterID>7</thrusterID>
+      <topicName>thrusters/7/input</topicName>
+      <dynamics>
+        <type>FirstOrder</type>
+        <timeConstant>0.2</timeConstant>
+        <gain>1.0</gain>
+      </dynamics>
+      <conversion>
+        <type>Basic</type>
+        <rotorConstant>1.0</rotorConstant>
+      </conversion>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="thruster_j8" filename="libuuv_thruster_ros_plugin.so">
+      <linkName>base_link</linkName>
+      <jointName>J8</jointName>
+      <thrusterID>8</thrusterID>
+      <topicName>thrusters/8/input</topicName>
+      <dynamics>
+        <type>FirstOrder</type>
+        <timeConstant>0.2</timeConstant>
+        <gain>1.0</gain>
+      </dynamics>
+      <conversion>
+        <type>Basic</type>
+        <rotorConstant>1.0</rotorConstant>
+      </conversion>
+    </plugin>
+  </gazebo>
+
+</robot>

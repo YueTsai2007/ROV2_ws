@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<launch>
+  <env name="SVGA_VGPU10" value="0" />
+  <env name="LIBGL_ALWAYS_SOFTWARE" value="1" />
+  <env name="IGNITION_CONFIG_VERIFY_SSL" value="false" />
+  
+  <include file="$(find uuv_gazebo_worlds)/launch/empty_underwater_world.launch">
+    <arg name="gui" value="true"/>
+    <arg name="paused" value="false"/>
+  </include>
+
+  <param name="robot_description" textfile="$(find underwater_robot)/urdf/underwater_robot.urdf" />
+  
+  <!-- Key: add robot_state_publisher -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" 
+        args="-param robot_description -urdf -model underwater_robot -x 0 -y 0 -z -5" />
+  
+  <node name="ned_to_base_tf" pkg="tf2_ros" type="static_transform_publisher" 
+        args="0 0 0 0 0 0 1 world_ned base_link" />
+  
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find underwater_robot)/config/standard_ros.rviz" />
+</launch>
