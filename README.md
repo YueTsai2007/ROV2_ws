@@ -69,6 +69,35 @@ sudo apt install ros-noetic-joy \
 
 ---
 
+## Docker 环境
+
+Docker 镜像包含 Ubuntu 20.04、ROS Noetic、Gazebo、项目依赖和已编译的工作空间。首次构建需要联网下载依赖，可能需要较长时间和较多磁盘空间。
+
+```bash
+git clone -b docker https://github.com/YueTsai2007/ROV2_ws.git
+cd ROV2_ws
+docker build -t rov2:noetic .
+docker run --rm -it --network host rov2:noetic
+# 容器内已加载 ROS 和工作空间环境
+roslaunch underwater_robot headless_underwater.launch
+```
+
+需要 Gazebo 或 RViz 图形界面时，Linux 主机须运行 X11（WSL2 需配置 WSLg 或 X server）。例如在支持 X11 的 Linux 主机上：
+
+```bash
+xhost +local:root
+docker run --rm -it --network host \
+  -e DISPLAY -e QT_X11_NO_MITSHM=1 \
+  -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
+  rov2:noetic
+# 完成后在主机撤销授权
+xhost -local:root
+```
+
+容器内运行 `roslaunch underwater_robot simple_gazebo_test.launch` 启动图形仿真。若需要 GPU 加速，还需按主机显卡配置 Docker 的 GPU 支持。镜像构建时复制源码；修改源码后需重新执行 `docker build`。ROS Noetic 和 Ubuntu 20.04 已停止标准维护，依赖下载与安全更新受上游支持情况影响。
+
+---
+
 ## 构建
 
 ```bash
