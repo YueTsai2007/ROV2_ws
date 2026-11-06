@@ -1,4 +1,5 @@
 <launch>
+    <arg name="gui" default="true"/>
     <arg name="record" default="false" doc="Set this flag to true to call record.launch"/>
     <arg name="bag_filename" default="recording.bag" doc="Name of the output ROS bag file in case record is set to true"/>
     <arg name="use_ned_frame" default="false" doc="If true, uses the NED (North-East-Down) frame conversion. If false, ENU (East-North-Up) will be used per default."/>
@@ -12,7 +13,9 @@
     <arg name="teleop_on" default="false" doc="If true, the teleop node will be started"/>
     <arg name="joy_id" default="0" doc="Joystick ID"/>
 
-    <include file="$(find uuv_gazebo_worlds)/launch/ocean_waves.launch"/>
+    <include file="$(find uuv_gazebo_worlds)/launch/ocean_waves.launch">
+        <arg name="gui" value="$(arg gui)"/>
+    </include>
 
     <include file="$(find uuv_simulation_wrapper)/launch/unpause_simulation.launch">
         <arg name="timeout" value="5"/>
@@ -27,6 +30,7 @@
     </include>
 
     <include file="$(find rexrov2_control)/launch/start_pid_controller.launch">
+        <arg name="gui_on" value="$(arg gui)"/>
         <arg name="teleop_on" value="$(arg teleop_on)"/>
         <arg name="joy_id" value="$(arg joy_id)"/>
         <arg name="use_ned_frame" value="$(arg use_ned_frame)"/>

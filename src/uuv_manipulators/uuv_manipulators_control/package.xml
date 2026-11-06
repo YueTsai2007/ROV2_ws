@@ -22,6 +22,7 @@
   <depend>sensor_msgs</depend>
   <depend>python-numpy</depend>
   <depend>tf</depend>
+  <exec_depend>tf_conversions</exec_depend>
   <depend>liborocos-kdl-dev</depend>
   <depend>liborocos-kdl</depend>
 

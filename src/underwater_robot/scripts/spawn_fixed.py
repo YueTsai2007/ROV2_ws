@@ -1,16 +1,14 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import sys
+import rospkg
 import os
 import subprocess
 
-# Set encoding
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 def main():
     # URDFFile path
-    urdf_file = os.path.join(os.path.dirname(__file__), '../urdf/test_simple.urdf')
+    urdf_file = os.path.join(rospkg.RosPack().get_path('underwater_robot'), 'urdf', 'test_simple.urdf')
     
     # ReadURDFFile
     with open(urdf_file, 'r') as f:
@@ -32,6 +30,7 @@ def main():
         print("Robot spawned successfully!")
     else:
         print("Robot spawn failed, exit code:", result)
+    return result
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

@@ -1,0 +1,11 @@
+# Catkin build outputs
+/build/
+/devel/
+/install/
+/logs/
+/.catkin_tools/
+/src/CMakeLists.txt
+
+# Python bytecode
+__pycache__/
+*.py[cod]

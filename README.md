@@ -41,6 +41,17 @@ ROV2_ws/
 
 ---
 
+## 本轮改进与验证状态
+
+- 修复机械臂外部命令未转发、默认演示覆盖命令，以及缺失关节位置和非有限命令的处理；演示模式可用 `roslaunch underwater_robot arm_control.launch demo:=true` 显式启用。
+- 修复模型生成脚本的 Python 3 兼容性、资源路径和失败退出码；补充节点安装配置、消息依赖与机械臂控制器的 `tf_conversions` 运行依赖。
+- 修正传感器基础初始化和磁力计更新函数缺少成功返回值的问题；修正海底场景暂停参数，并为基础仿真和 RexROV 演示增加 `gui:=false` 无界面选项。
+- 更新分阶段启动说明，忽略构建产物，并加入命令转发、异常输入、模型生成失败等回归测试。
+
+在 ROS Noetic / Gazebo 11 Docker 中，完整 catkin 构建和 7 项回归测试通过；暂停状态下，自定义机器人模型、位姿及六个推进器接口通过检查。RexROV 模型、PID 和推进器分配器已启动，双机械臂模型已生成。螺旋轨迹消息生成报错、重复 TF 警告、机械臂依赖安装后的复测和动态控制仍待解决或验证；测试环境没有摇杆和图形界面。详细记录见 [第二轮状态](src/underwater_robot/ROUND2_STATUS.md) 和下方快速开始说明。
+
+---
+
 ## 依赖环境
 
 | 组件 | 版本要求 |
@@ -97,7 +108,10 @@ source devel/setup.bash
 # 基础 Gazebo 测试
 roslaunch underwater_robot simple_gazebo_test.launch
 
-# 带 PID 控制器的完整仿真
+# 启动水下场景及机器人（默认暂停；无图形环境加 gui:=false）
+roslaunch underwater_robot bringup.launch
+
+# 在另一个终端启动 PID 和推进器分配器（模型仍需校准）
 roslaunch underwater_robot start_uuv_pid_controller.launch
 
 # RViz 可视化
@@ -110,7 +124,7 @@ roslaunch underwater_robot display.launch
 # 启动海洋环境 + 控制器
 roslaunch rexrov2_gazebo start_demo_pid_controller.launch
 
-# 螺旋轨迹测试
+# 螺旋轨迹测试（当前轨迹消息生成报错，尚未通过验证）
 roslaunch uuv_control_utils start_helical_trajectory.launch \
   uuv_name:=rexrov2 n_turns:=2 radius:=8
 ```
@@ -123,12 +137,14 @@ roslaunch uuv_gazebo_worlds subsea_bop_panel.launch
 
 # 加载带双机械臂的机器人
 roslaunch uuv_descriptions upload_rexrov_oberon_arms.launch \
-  mode:=default x:=0 y:=0 z:=-40 namespace:=rexrov
+  x:=0 y:=0 z:=-40 namespace:=rexrov
 
-# 机械臂协同控制
+# 机械臂协同控制（需要安装 tf_conversions 并连接 /dev/input/js0）
 roslaunch oberon7_control uuv_oberon7_cooperate_teleop.launch \
   uuv_name:=rexrov model_name:=rexrov joy_id:=0
 ```
+
+自定义机器人目前质量与排水体积不匹配、推进矩阵秩为 5，机械臂限位为零；PID 动态表现和机械臂运动尚未通过验证。参见 [集成状态](src/underwater_robot/ROUND1_STATUS.md)。
 
 更多命令参考 **[docs/shuoming.txt](docs/shuoming.txt)**（包含轨迹规划、环境扰动、推进器故障模拟、机械臂控制等完整示例）。
 
@@ -161,7 +177,7 @@ roslaunch oberon7_control uuv_oberon7_cooperate_teleop.launch \
 | 文件 | 用途 |
 |------|------|
 | `launch/simple_gazebo_test.launch` | 最简 Gazebo 测试 |
-| `launch/start_uuv_pid_controller.launch` | 完整 PID 控制 + UUV |
+| `launch/start_uuv_pid_controller.launch` | PID 控制器及推进器分配器（需先启动场景和机器人） |
 | `launch/final_underwater_sim.launch` | 最终水下仿真 |
 | `launch/headless_underwater.launch` | 无头模式（仅 gzserver） |
 | `launch/arm_control.launch` | 机械臂独立控制 |
