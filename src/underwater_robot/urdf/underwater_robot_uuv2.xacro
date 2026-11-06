@@ -9,24 +9,33 @@
   <!-- Include original URDF content -->
   <xacro:include filename="$(find underwater_robot)/urdf/underwater_robot.urdf" />
 
-  <!-- Add underwater physics plugin -->
+  <!-- Interface baseline only: the original CAD mass and volume are inconsistent.
+       Do not use for physical validation until the CAD mass and displacement are verified. -->
   <gazebo>
     <plugin name="uuv_plugin" filename="libuuv_underwater_object_ros_plugin.so">
-      <namespace>$(arg namespace)</namespace>
-      <link_name>base_link</link_name>
-      <neutrally_buoyant>false</neutrally_buoyant>
-      <buoyancy_force>215.0</buoyancy_force>
-      <volume>0.021</volume>
       <fluid_density>1028.0</fluid_density>
-      <center_of_buoyancy>0 0 0.1</center_of_buoyancy>
-      
-      <hydrodynamic_model>
-        <type>fossen</type>
-        <added_mass>20 20 20 10 10 10</added_mass>
-        <linear_damping>70 70 70 50 50 50</linear_damping>
-        <linear_damping_forward_speed>0 0 0 0 0 0</linear_damping_forward_speed>
-        <quadratic_damping>100 100 100 80 80 80</quadratic_damping>
-      </hydrodynamic_model>
+      <link name="base_link">
+        <neutrally_buoyant>false</neutrally_buoyant>
+        <volume>0.021</volume>
+        <center_of_buoyancy>0 0 0.1</center_of_buoyancy>
+        <hydrodynamic_model>
+          <type>fossen</type>
+          <linear_damping>-70 -70 -70 -50 -50 -50</linear_damping>
+          <linear_damping_forward_speed>0 0 0 0 0 0</linear_damping_forward_speed>
+          <quadratic_damping>-100 -100 -100 -80 -80 -80</quadratic_damping>
+        </hydrodynamic_model>
+      </link>
+    </plugin>
+    <plugin name="pose_gt_plugin" filename="libuuv_gazebo_ros_pose_gt_plugin.so">
+      <robot_namespace>$(arg namespace)</robot_namespace>
+      <link_name>base_link</link_name>
+      <sensor_topic>pose_gt</sensor_topic>
+      <static_reference_frame>world</static_reference_frame>
+      <update_rate>20</update_rate>
+      <noise_sigma>0.0</noise_sigma>
+      <noise_amplitude>0.0</noise_amplitude>
+      <enable_gazebo_messages>false</enable_gazebo_messages>
+      <publish_ned_odom>false</publish_ned_odom>
     </plugin>
   </gazebo>
 
