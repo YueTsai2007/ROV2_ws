@@ -246,6 +246,10 @@ class WPTrajectoryGenerator(object):
     def get_samples(self, step=0.005):
         """Return pose samples from the interpolated path."""
         assert step > 0, 'Step size must be positive'
+        # The planner publishes its trajectory immediately after accepting
+        # waypoints, before the first call to interpolate().
+        if not self._has_started and not self.interpolator.init_interpolator():
+            return None
         return self.interpolator.get_samples(0.0, step)
 
     def set_start_time(self, t):

@@ -204,7 +204,8 @@ void UnderwaterObjectROSPlugin::Update(const gazebo::common::UpdateInfo &_info)
 {
   UnderwaterObjectPlugin::Update(_info);
 
-  this->nedTransform.header.stamp = ros::Time::now();
+  // Use the physics step timestamp; /clock can lag by several updates.
+  this->nedTransform.header.stamp = ros::Time(_info.simTime.sec, _info.simTime.nsec);
   this->tfBroadcaster.sendTransform(this->nedTransform);
 }
 

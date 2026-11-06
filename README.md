@@ -48,7 +48,7 @@ ROV2_ws/
 - 修正传感器基础初始化和磁力计更新函数缺少成功返回值的问题；修正海底场景暂停参数，并为基础仿真和 RexROV 演示增加 `gui:=false` 无界面选项。
 - 更新分阶段启动说明，忽略构建产物，并加入命令转发、异常输入、模型生成失败等回归测试。
 
-在 ROS Noetic / Gazebo 11 Docker 中，完整 catkin 构建和 7 项回归测试通过；暂停状态下，自定义机器人模型、位姿及六个推进器接口通过检查。RexROV 模型、PID 和推进器分配器已启动，双机械臂模型已生成。螺旋轨迹消息生成报错、重复 TF 警告、机械臂依赖安装后的复测和动态控制仍待解决或验证；测试环境没有摇杆和图形界面。详细记录见 [第二轮状态](src/underwater_robot/ROUND2_STATUS.md) 和下方快速开始说明。
+在 ROS Noetic / Gazebo 11 Docker 中，完整 catkin 构建和 7 项回归测试通过；暂停状态下，自定义机器人模型、位姿及六个推进器接口通过检查。RexROV 模型、PID 和推进器分配器已启动，双机械臂模型已生成。螺旋轨迹采样初始化和重复 TF 时间戳问题已修复；容器实测轨迹生成及发布成功，短时重测未出现重复 TF。机械臂依赖安装后协同控制进程已启动，但暂停仿真下控制器等待 TF，完整协同运动和动态控制仍待验证；测试环境没有摇杆和图形界面。详细记录见 [第二轮状态](src/underwater_robot/ROUND2_STATUS.md) 和下方快速开始说明。
 
 ---
 
@@ -74,6 +74,7 @@ sudo apt install ros-noetic-joy \
   ros-noetic-ros-control \
   ros-noetic-ros-controllers \
   ros-noetic-tf2-ros \
+  ros-noetic-tf-conversions \
   ros-noetic-xacro \
   python3-catkin-tools
 ```
@@ -124,7 +125,7 @@ roslaunch underwater_robot display.launch
 # 启动海洋环境 + 控制器
 roslaunch rexrov2_gazebo start_demo_pid_controller.launch
 
-# 螺旋轨迹测试（当前轨迹消息生成报错，尚未通过验证）
+# 螺旋轨迹测试（已验证轨迹生成与发布；完整跟踪仍待验证）
 roslaunch uuv_control_utils start_helical_trajectory.launch \
   uuv_name:=rexrov2 n_turns:=2 radius:=8
 ```

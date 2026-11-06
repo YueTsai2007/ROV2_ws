@@ -86,7 +86,7 @@ if __name__ == '__main__':
                        params['n_turns'],
                        params['delta_z'])
 
-    if success:
+    if success.success:
         print('Trajectory successfully generated!')
     else:
-        print('Failed')
+        raise rospy.ROSException('Trajectory generation was rejected by the controller')
