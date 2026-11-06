@@ -10,29 +10,64 @@ thruster_manager:
   conversion_fcn: proportional
   conversion_fcn_params:
     gain: 0.001
-
 thrusters:
-  thruster_1:
+  thruster_0:
     joint: J1
-    origin: [0.28826, 0.18, -0.10969]
-    direction: [0.86603, 0, 0.5]
-  thruster_2:
+    origin:
+    - 0.288260052347553
+    - 0.179999999999991
+    - -0.10968904997502
+    direction:
+    - 0.866025403784441
+    - 0.0
+    - 0.499999999999996
+  thruster_1:
     joint: J2
-    origin: [0.28826, 0.18, 0.10969]
-    direction: [0.86603, 0, -0.5]
-  thruster_3:
+    origin:
+    - 0.288260052347554
+    - 0.17999999999999
+    - 0.10968904997502
+    direction:
+    - 0.8660254037844398
+    - 0.0
+    - -0.4999999999999979
+  thruster_2:
     joint: J5
-    origin: [-0.14001, 0.33559, -0.125]
-    direction: [0, 1, 0]
-  thruster_4:
+    origin:
+    - -0.140007714422317
+    - 0.335591649969219
+    - -0.125
+    direction:
+    - 0.0
+    - 1.0
+    - 0.0
+  thruster_3:
     joint: J6
-    origin: [-0.14001, 0.33559, 0.125]
-    direction: [0, 1, 0]
-  thruster_5:
+    origin:
+    - -0.140007714422317
+    - 0.335591649969219
+    - 0.125
+    direction:
+    - 0.0
+    - 1.0
+    - 0.0
+  thruster_4:
     joint: J7
-    origin: [-0.28828, 0.18, 0.10969]
-    direction: [-0.86603, 0, -0.5]
-  thruster_6:
+    origin:
+    - -0.288275481192185
+    - 0.179999999999994
+    - 0.109689049975018
+    direction:
+    - -0.8660254037844398
+    - 0.0
+    - -0.4999999999999979
+  thruster_5:
     joint: J8
-    origin: [-0.28828, 0.18, -0.10969]
-    direction: [-0.86603, 0, 0.5]
+    origin:
+    - -0.28828
+    - 0.18
+    - -0.10969
+    direction:
+    - -0.8660265528314682
+    - 0.0
+    - 0.49999800978688286

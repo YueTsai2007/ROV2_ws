@@ -39,113 +39,94 @@
     </plugin>
   </gazebo>
 
-  <!-- Thruster plugins - using different configs to avoid conflicts -->
+  <!-- Geometry from CAD J1; auxiliary mass and inertia are provisional. -->
+  <link name="thruster_0_link">
+    <inertial><mass value="0.01"/><inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/></inertial>
+  </link>
+  <joint name="thruster_0_joint" type="continuous">
+    <origin xyz="0.288260052347553 0.179999999999991 -0.10968904997502" rpy="0 0 0"/><parent link="base_link"/><child link="thruster_0_link"/><axis xyz="0.866025403784441 0.0 0.499999999999996"/>
+  </joint>
   <gazebo>
-    <plugin name="thruster_j1" filename="libuuv_thruster_ros_plugin.so">
-      <linkName>base_link</linkName>
-      <jointName>J1</jointName>
-      <thrusterID>1</thrusterID>
-      <topicName>thrusters/1/input</topicName>
-      <dynamics>
-        <type>FirstOrder</type>
-        <timeConstant>0.2</timeConstant>
-        <gain>1.0</gain>
-      </dynamics>
-      <conversion>
-        <type>Basic</type>
-        <rotorConstant>1.0</rotorConstant>
-      </conversion>
+    <plugin name="thruster_0" filename="libuuv_thruster_ros_plugin.so">
+      <linkName>thruster_0_link</linkName><jointName>thruster_0_joint</jointName><thrusterID>0</thrusterID>
+      <dynamics><type>FirstOrder</type><timeConstant>0.2</timeConstant></dynamics>
+      <conversion><type>Basic</type><rotorConstant>0.001</rotorConstant></conversion>
     </plugin>
   </gazebo>
-
+  <!-- Geometry from CAD J2; auxiliary mass and inertia are provisional. -->
+  <link name="thruster_1_link">
+    <inertial><mass value="0.01"/><inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/></inertial>
+  </link>
+  <joint name="thruster_1_joint" type="continuous">
+    <origin xyz="0.288260052347554 0.17999999999999 0.10968904997502" rpy="0 0 0"/><parent link="base_link"/><child link="thruster_1_link"/><axis xyz="0.8660254037844398 0.0 -0.4999999999999979"/>
+  </joint>
   <gazebo>
-    <plugin name="thruster_j2" filename="libuuv_thruster_ros_plugin.so">
-      <linkName>base_link</linkName>
-      <jointName>J2</jointName>
-      <thrusterID>2</thrusterID>
-      <topicName>thrusters/2/input</topicName>
-      <dynamics>
-        <type>FirstOrder</type>
-        <timeConstant>0.2</timeConstant>
-        <gain>1.0</gain>
-      </dynamics>
-      <conversion>
-        <type>Basic</type>
-        <rotorConstant>1.0</rotorConstant>
-      </conversion>
+    <plugin name="thruster_1" filename="libuuv_thruster_ros_plugin.so">
+      <linkName>thruster_1_link</linkName><jointName>thruster_1_joint</jointName><thrusterID>1</thrusterID>
+      <dynamics><type>FirstOrder</type><timeConstant>0.2</timeConstant></dynamics>
+      <conversion><type>Basic</type><rotorConstant>0.001</rotorConstant></conversion>
     </plugin>
   </gazebo>
-
+  <!-- Geometry from CAD J5; auxiliary mass and inertia are provisional. -->
+  <link name="thruster_2_link">
+    <inertial><mass value="0.01"/><inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/></inertial>
+  </link>
+  <joint name="thruster_2_joint" type="continuous">
+    <origin xyz="-0.140007714422317 0.335591649969219 -0.125" rpy="0 0 0"/><parent link="base_link"/><child link="thruster_2_link"/><axis xyz="0.0 1.0 0.0"/>
+  </joint>
   <gazebo>
-    <plugin name="thruster_j5" filename="libuuv_thruster_ros_plugin.so">
-      <linkName>base_link</linkName>
-      <jointName>J5</jointName>
-      <thrusterID>5</thrusterID>
-      <topicName>thrusters/5/input</topicName>
-      <dynamics>
-        <type>FirstOrder</type>
-        <timeConstant>0.2</timeConstant>
-        <gain>1.0</gain>
-      </dynamics>
-      <conversion>
-        <type>Basic</type>
-        <rotorConstant>1.0</rotorConstant>
-      </conversion>
+    <plugin name="thruster_2" filename="libuuv_thruster_ros_plugin.so">
+      <linkName>thruster_2_link</linkName><jointName>thruster_2_joint</jointName><thrusterID>2</thrusterID>
+      <dynamics><type>FirstOrder</type><timeConstant>0.2</timeConstant></dynamics>
+      <conversion><type>Basic</type><rotorConstant>0.001</rotorConstant></conversion>
     </plugin>
   </gazebo>
-
+  <!-- Geometry from CAD J6; auxiliary mass and inertia are provisional. -->
+  <link name="thruster_3_link">
+    <inertial><mass value="0.01"/><inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/></inertial>
+  </link>
+  <joint name="thruster_3_joint" type="continuous">
+    <origin xyz="-0.140007714422317 0.335591649969219 0.125" rpy="0 0 0"/><parent link="base_link"/><child link="thruster_3_link"/><axis xyz="0.0 1.0 0.0"/>
+  </joint>
   <gazebo>
-    <plugin name="thruster_j6" filename="libuuv_thruster_ros_plugin.so">
-      <linkName>base_link</linkName>
-      <jointName>J6</jointName>
-      <thrusterID>6</thrusterID>
-      <topicName>thrusters/6/input</topicName>
-      <dynamics>
-        <type>FirstOrder</type>
-        <timeConstant>0.2</timeConstant>
-        <gain>1.0</gain>
-      </dynamics>
-      <conversion>
-        <type>Basic</type>
-        <rotorConstant>1.0</rotorConstant>
-      </conversion>
+    <plugin name="thruster_3" filename="libuuv_thruster_ros_plugin.so">
+      <linkName>thruster_3_link</linkName><jointName>thruster_3_joint</jointName><thrusterID>3</thrusterID>
+      <dynamics><type>FirstOrder</type><timeConstant>0.2</timeConstant></dynamics>
+      <conversion><type>Basic</type><rotorConstant>0.001</rotorConstant></conversion>
     </plugin>
   </gazebo>
-
+  <!-- Geometry from CAD J7; auxiliary mass and inertia are provisional. -->
+  <link name="thruster_4_link">
+    <inertial><mass value="0.01"/><inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/></inertial>
+  </link>
+  <joint name="thruster_4_joint" type="continuous">
+    <origin xyz="-0.288275481192185 0.179999999999994 0.109689049975018" rpy="0 0 0"/><parent link="base_link"/><child link="thruster_4_link"/><axis xyz="-0.8660254037844398 0.0 -0.4999999999999979"/>
+  </joint>
   <gazebo>
-    <plugin name="thruster_j7" filename="libuuv_thruster_ros_plugin.so">
-      <linkName>base_link</linkName>
-      <jointName>J7</jointName>
-      <thrusterID>7</thrusterID>
-      <topicName>thrusters/7/input</topicName>
-      <dynamics>
-        <type>FirstOrder</type>
-        <timeConstant>0.2</timeConstant>
-        <gain>1.0</gain>
-      </dynamics>
-      <conversion>
-        <type>Basic</type>
-        <rotorConstant>1.0</rotorConstant>
-      </conversion>
+    <plugin name="thruster_4" filename="libuuv_thruster_ros_plugin.so">
+      <linkName>thruster_4_link</linkName><jointName>thruster_4_joint</jointName><thrusterID>4</thrusterID>
+      <dynamics><type>FirstOrder</type><timeConstant>0.2</timeConstant></dynamics>
+      <conversion><type>Basic</type><rotorConstant>0.001</rotorConstant></conversion>
     </plugin>
   </gazebo>
-
+  <!-- Geometry from CAD J8; auxiliary mass and inertia are provisional. -->
+  <link name="thruster_5_link">
+    <inertial><mass value="0.01"/><inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/></inertial>
+  </link>
+  <joint name="thruster_5_joint" type="continuous">
+    <origin xyz="-0.28828 0.18 -0.10969" rpy="0 0 0"/><parent link="base_link"/><child link="thruster_5_link"/><axis xyz="-0.8660265528314682 0.0 0.49999800978688286"/>
+  </joint>
   <gazebo>
-    <plugin name="thruster_j8" filename="libuuv_thruster_ros_plugin.so">
-      <linkName>base_link</linkName>
-      <jointName>J8</jointName>
-      <thrusterID>8</thrusterID>
-      <topicName>thrusters/8/input</topicName>
-      <dynamics>
-        <type>FirstOrder</type>
-        <timeConstant>0.2</timeConstant>
-        <gain>1.0</gain>
-      </dynamics>
-      <conversion>
-        <type>Basic</type>
-        <rotorConstant>1.0</rotorConstant>
-      </conversion>
+    <plugin name="thruster_5" filename="libuuv_thruster_ros_plugin.so">
+      <linkName>thruster_5_link</linkName><jointName>thruster_5_joint</jointName><thrusterID>5</thrusterID>
+      <dynamics><type>FirstOrder</type><timeConstant>0.2</timeConstant></dynamics>
+      <conversion><type>Basic</type><rotorConstant>0.001</rotorConstant></conversion>
     </plugin>
   </gazebo>
-
+  <gazebo>
+    <plugin name="joint_states" filename="libgazebo_ros_joint_state_publisher.so">
+      <robotNamespace>$(arg namespace)</robotNamespace><updateRate>50</updateRate>
+      <jointName>J1,J2,J5,J6,J7,J8,arm1,thruster_0_joint,thruster_1_joint,thruster_2_joint,thruster_3_joint,thruster_4_joint,thruster_5_joint</jointName>
+    </plugin>
+  </gazebo>
 </robot>
