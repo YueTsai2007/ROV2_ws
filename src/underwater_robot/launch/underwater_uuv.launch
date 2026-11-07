@@ -1,5 +1,6 @@
 <launch>
   <arg name="namespace" default="underwater_robot"/>
+  <arg name="cache_paused_tf" default="true"/>
   <arg name="x" default="0"/><arg name="y" default="0"/><arg name="z" default="-5"/>
   <arg name="roll" default="0"/><arg name="pitch" default="0"/><arg name="yaw" default="0"/>
   <group ns="$(arg namespace)">
@@ -16,4 +17,7 @@
     <arg name="world_frame" value="world"/>
     <arg name="child_frame_id" value="/$(arg namespace)/base_link"/>
   </include>
+  <node if="$(arg cache_paused_tf)" name="paused_tf_cache" pkg="underwater_robot" type="pause_tf_cache.py" output="screen">
+    <param name="namespace" value="$(arg namespace)"/>
+  </node>
 </launch>

@@ -1,20 +1,14 @@
 <launch>
-  <arg
-    name="model" />
-  <param
-    name="robot_description"
-    textfile="$(find underwater_robot)/urdf/underwater_robot.urdf" />
-  <node
-    name="joint_state_publisher_gui"
-    pkg="joint_state_publisher_gui"
-    type="joint_state_publisher_gui" />
-  <node
-    name="robot_state_publisher"
-    pkg="robot_state_publisher"
-    type="robot_state_publisher" />
-  <node
-    name="rviz"
-    pkg="rviz"
-    type="rviz"
-    args="-d $(find underwater_robot)/urdf.rviz" />
+  <!-- Standalone model view. Stop a running bringup before using this launch. -->
+  <group ns="underwater_robot">
+    <param name="robot_description" textfile="$(find underwater_robot)/urdf/underwater_robot.urdf"/>
+    <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+      <param name="tf_prefix" value="underwater_robot"/>
+    </node>
+  </group>
+  <node name="display_world_to_base" pkg="tf2_ros" type="static_transform_publisher"
+        args="0 0 0 0 0 0 world underwater_robot/base_link"/>
+  <node name="rviz" pkg="rviz" type="rviz"
+        args="-d $(find underwater_robot)/config/standard_ros.rviz"/>
 </launch>

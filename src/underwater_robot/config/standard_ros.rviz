@@ -10,13 +10,16 @@ Panels:
 Visualization Manager:
   Displays:
     - Class: rviz/Grid
+      Enabled: true
       Name: Grid
     - Class: rviz/TF
       Name: TF
       Frame Timeout: 15
     - Class: rviz/RobotModel
+      Enabled: true
       Name: RobotModel
-      Description Topic: /robot_description
+      Robot Description: /underwater_robot/robot_description
+      TF Prefix: underwater_robot
       Visual Enabled: true
       Collision Enabled: false
   Global Options:
