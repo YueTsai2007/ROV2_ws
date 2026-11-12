@@ -125,12 +125,9 @@ class DPControllerBase(object):
             stamped_pose_only=self._use_stamped_poses_only,
             thrusters_only=self.thrusters_only)
 
-        self._control_saturation = 5000
-        # TODO: Fix the saturation term and how it is applied
-        if rospy.has_param('~saturation'):
-            self._thrust_saturation = rospy.get_param('~saturation')
-            if self._control_saturation <= 0:
-                raise rospy.ROSException('Invalid control saturation forces')
+        self._control_saturation = float(rospy.get_param('~saturation', 5000))
+        if not np.isfinite(self._control_saturation) or self._control_saturation <= 0:
+            raise rospy.ROSException('Invalid control saturation forces')
 
         # Flag indicating either use of the AUV control allocator or
         # direct command of fins and thruster
@@ -414,6 +411,11 @@ class DPControllerBase(object):
         """
         if not self.odom_is_init:
             return
+
+        force = np.asarray(force, dtype=float).copy()
+        if force.shape != (6,) or not np.isfinite(force).all():
+            rospy.logerr_throttle(1, 'Invalid controller wrench; commanding zero')
+            force = np.zeros(6)
 
         # Apply saturation
         for i in range(6):

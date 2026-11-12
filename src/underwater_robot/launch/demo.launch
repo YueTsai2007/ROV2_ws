@@ -1,0 +1,29 @@
+<launch>
+  <!-- Estimated demo only. Original CAD URDF and physical model are preserved. -->
+  <arg name="gui" default="true"/>
+  <arg name="paused" default="true"/>
+  <arg name="namespace" default="underwater_robot"/>
+  <arg name="start_controller" default="false"/>
+  <arg name="guard_output" default="thrusters"/>
+  <include file="$(find uuv_gazebo_worlds)/launch/empty_underwater_world.launch">
+    <arg name="gui" value="$(arg gui)"/><arg name="paused" value="$(arg paused)"/>
+  </include>
+  <group ns="$(arg namespace)">
+    <param name="robot_description" command="$(find xacro)/xacro '$(find underwater_robot)/urdf/underwater_robot_demo.xacro' namespace:=$(arg namespace)"/>
+    <node name="demo_spawner" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg namespace) -param robot_description -x 0 -y 0 -z -3" output="screen"/>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+      <param name="tf_prefix" value="$(arg namespace)"/>
+    </node>
+    <node name="demo_command_guard" pkg="underwater_robot" type="demo_command_guard.py" output="screen">
+      <rosparam command="load" file="$(find underwater_robot)/config/demo_parameters.yaml"/>
+      <param name="timeout" value="0.5"/><param name="output_prefix" value="$(arg guard_output)"/>
+    </node>
+  </group>
+  <include file="$(find uuv_assistants)/launch/message_to_tf.launch">
+    <arg name="namespace" value="$(arg namespace)"/><arg name="world_frame" value="world"/>
+    <arg name="child_frame_id" value="/$(arg namespace)/base_link"/>
+  </include>
+  <include if="$(arg start_controller)" file="$(find underwater_robot)/launch/demo_pid.launch">
+    <arg name="uuv_name" value="$(arg namespace)"/>
+  </include>
+</launch>

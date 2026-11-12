@@ -180,6 +180,10 @@ class DPControllerLocalPlanner(object):
         self._dt = 0.0
         # Time stamp for the last velocity reference received
         self._last_teleop_update = None
+        self._last_teleop_reference_time = None
+        self._teleop_timeout = float(rospy.get_param('~teleop_timeout', 0.5))
+        if not np.isfinite(self._teleop_timeout) or self._teleop_timeout <= 0:
+            raise rospy.ROSException('teleop_timeout must be finite and positive')
         # Flag to indicate if the teleoperation node is active
         self._is_teleop_active = False
         # Teleop node twist message
@@ -403,13 +407,11 @@ class DPControllerLocalPlanner(object):
             self._teleop_vel_ref = None
             return
 
-        # If this is the first twist message since the last time automatic mode
-        # was turned off, then just update the teleop timestamp and wait for
-        # the next message to allow computing pose and velocity reference.
-        if self._last_teleop_update is None:
-            self._teleop_vel_ref = None
-            self._last_teleop_update = rospy.get_time()
-            return
+        values = np.array([msg.linear.x, msg.linear.y, msg.linear.z,
+                           msg.angular.x, msg.angular.y, msg.angular.z])
+        if not np.isfinite(values).all():
+            msg = Twist()
+            rospy.logwarn_throttle(1, 'Rejected non-finite teleop velocity')
 
         # Store twist reference message
         self._teleop_vel_ref = msg
@@ -421,6 +423,11 @@ class DPControllerLocalPlanner(object):
 
         # Store time stamp
         self._last_teleop_update = rospy.get_time()
+        if not self._is_teleop_active and self._vehicle_pose is not None:
+            self._this_ref_pnt = deepcopy(self._vehicle_pose)
+            self._this_ref_pnt.vel = np.zeros(6)
+            self._this_ref_pnt.acc = np.zeros(6)
+            self._last_teleop_reference_time = None
 
     def _calc_teleop_reference(self):
         """Compute pose and velocity reference using the 
@@ -428,15 +435,17 @@ class DPControllerLocalPlanner(object):
         """
         # Check if there is already a timestamp for the last received reference
         # message from the teleop node
-        if self._last_teleop_update is None:
-            self._is_teleop_active = False
-
-        # Compute time step
-        self._dt = rospy.get_time() - self._last_teleop_update
+        now = rospy.get_time()
+        age = None if self._last_teleop_update is None else now - self._last_teleop_update
+        previous = self._last_teleop_reference_time
+        self._dt = min(age, 0.05) if previous is None and age is not None else (
+            0.0 if previous is None else min(now - previous, 0.1))
+        self._last_teleop_reference_time = now
 
         # Compute the pose and velocity reference if the computed time step is
         # positive and the twist teleop message is valid
-        if self._dt > 0 and self._teleop_vel_ref is not None and self._dt < 0.1:
+        if (self._dt > 0 and self._teleop_vel_ref is not None and
+                age is not None and 0 <= age <= self._teleop_timeout):
             speed = np.sqrt(self._teleop_vel_ref.linear.x**2 + self._teleop_vel_ref.linear.y**2)
             vel = np.array([self._teleop_vel_ref.linear.x, self._teleop_vel_ref.linear.y, self._teleop_vel_ref.linear.z])
             # Cap the forward speed if needed
@@ -448,7 +457,7 @@ class DPControllerLocalPlanner(object):
 
             # Compute pose step
             step = uuv_trajectory_generator.TrajectoryPoint()
-            step.pos = np.dot(self._vehicle_pose.rot_matrix, vel * self._dt)
+            step.pos = vel * self._dt
             step.rotq = quaternion_about_axis(self._teleop_vel_ref.angular.z * self._dt, [0, 0, 1])
 
             # Compute new reference
@@ -468,6 +477,8 @@ class DPControllerLocalPlanner(object):
         else:
             self._is_teleop_active = False
             ref_pnt = deepcopy(self._vehicle_pose)
+            ref_pnt.vel = np.zeros(6)
+            ref_pnt.acc = np.zeros(6)
         return ref_pnt
 
     def _calc_smooth_approach(self):

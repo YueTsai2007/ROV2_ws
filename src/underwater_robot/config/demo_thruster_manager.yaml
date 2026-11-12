@@ -1,0 +1,12 @@
+thruster_manager:
+  base_link: base_link
+  tf_prefix: underwater_robot
+  thruster_topic_prefix: thruster_commands/
+  thruster_topic_suffix: /input
+  thruster_frame_base: thruster_
+  max_thrust: 8.0
+  timeout: 0.5
+  update_rate: 30
+  conversion_fcn: proportional
+  conversion_fcn_params:
+    gain: 0.001

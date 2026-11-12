@@ -2,6 +2,48 @@
 
 基于 ROS + Gazebo 的 ROV（遥控水下航行器）仿真与控制系统研发平台。
 
+## 低推力遥控演示（2026-11-07）
+
+建议使用新的独立演示入口。模型采用明确标注的估算质量、惯量、阻尼和中性浮力，统一为 **X 前、Y 左、Z 上**；原始 CAD URDF 和网格保留。演示中的机械臂和 CAD 视觉关节固定，不用于实机参数或机械臂动力学验证。
+
+每个终端先加载 Noetic 和工作空间；在本次容器中为：
+
+```bash
+docker exec -it rov2-fix bash
+source /opt/ros/noetic/setup.bash
+source /opt/rov2-fix-local/devel/setup.bash
+```
+
+先停止其他 Gazebo/bringup 场景，再在终端 1 启动：
+
+```bash
+roslaunch underwater_robot demo.launch gui:=true paused:=false start_controller:=true
+```
+
+终端 2 在交互终端中运行键盘控制（焦点必须在这个终端）：
+
+```bash
+roslaunch underwater_robot demo_keyboard.launch
+```
+
+W/S 前后，A/D 左右，R/F 上下，Q/E 转向。无键盘输入约 0.2 秒后发零速度，空格停止速度参考，Ctrl-C 退出键盘节点。零速度意味着控制器保持位置，仍可能产生修正推力；需要冻结仿真时，在另一个已加载环境的终端执行：
+
+```bash
+rosservice call /gazebo/pause_physics
+```
+
+若启动时用 `paused:=true`，准备操作时执行 `rosservice call /gazebo/unpause_physics`。守护节点用墙钟检查 0.5 秒输出超时，暂停时也能将过期推进器命令归零。默认每路推力上限 8 N；本次小速度运动测试实测最大约 0.42 N。
+
+本机 RViz 的 NVIDIA D3D12 路径存在网格不可见问题；可以在终端 3 单独启动已验证的软件渲染方式：
+
+```bash
+GALLIUM_DRIVER=llvmpipe LIBGL_ALWAYS_SOFTWARE=1 rviz -d "$(rospack find underwater_robot)/config/standard_ros.rviz"
+```
+
+实际模型默认需要先有位姿/TF 数据；启动即暂停时先短暂运行再暂停。不要同时启动独立 `display.launch`，它会发布另一套模型参数和静态 TF。
+
+本次 14 项离线回归、输出隔离、真实键盘 PTY 和四方向短时低推力运动验证通过。运动方向已核对；速度精度、长期稳定性和外扰性能尚未验收。详情见 [修复与验证记录](docs/CONTROL_DEMO_FIX.md)。下文的原始模型入口保留作研发对照，其质量/浮力参数不适合作为本演示的遥控入口。
+
 - **自定义机器人**：`underwater_robot` — 6 推进器、10 连杆的 ROV
 - **上游框架**：AGDR_UVMS（基于 [UUV Simulator](https://github.com/uuvsimulator/uuv_simulator)，兼容 ROS Noetic）
 - **仿真环境**：Gazebo 水下物理仿真（Fossen 动力学、水流扰动、传感器、机械臂）

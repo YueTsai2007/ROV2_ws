@@ -20,5 +20,9 @@ catkin_install_python(PROGRAMS
   scripts/set_clean_urdf.py
   scripts/spawn_fixed.py
   scripts/generate_tam.py
+  scripts/generate_demo_model.py
+  scripts/demo_command_guard.py
+  scripts/demo_keyboard.py
+  scripts/pause_tf_cache.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

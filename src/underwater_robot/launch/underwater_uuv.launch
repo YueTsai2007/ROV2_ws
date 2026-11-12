@@ -2,7 +2,8 @@
   <arg name="namespace" default="underwater_robot"/>
   <arg name="cache_paused_tf" default="true"/>
   <arg name="x" default="0"/><arg name="y" default="0"/><arg name="z" default="-5"/>
-  <arg name="roll" default="0"/><arg name="pitch" default="0"/><arg name="yaw" default="0"/>
+  <!-- CAD uses +Y up; rotate +90 degrees around X into Gazebo +Z up. -->
+  <arg name="roll" default="1.5707963267948966"/><arg name="pitch" default="0"/><arg name="yaw" default="0"/>
   <group ns="$(arg namespace)">
     <param name="robot_description" command="$(find xacro)/xacro '$(find underwater_robot)/urdf/underwater_robot_uuv2.xacro' namespace:=$(arg namespace)"/>
     <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" output="screen"

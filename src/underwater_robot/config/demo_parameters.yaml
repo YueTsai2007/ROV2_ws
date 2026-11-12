@@ -1,0 +1,13 @@
+# ESTIMATED DEMONSTRATION PARAMETERS, not measured vehicle specifications.
+# base_link: +X forward, +Y left, +Z up; original CAD uses +Y up.
+mass: 25.0
+auxiliary_mass: 0.01
+fluid_density: 1028.0
+cad_center: [0.0, 0.17, 0.0]
+center_of_buoyancy: [0.0, 0.0, 0.04]
+box_size: [0.74, 0.40, 0.40]
+linear_damping: [40, 40, 50, 8, 8, 8]
+quadratic_damping: [40, 40, 50, 8, 8, 8]
+max_thrust: 8.0
+conversion_gain: 0.001
+command_timeout: 0.5

@@ -15,6 +15,8 @@
 # limitations under the License.
 from __future__ import print_function
 import numpy
+import time
+import threading
 import rospy
 import tf
 import tf.transformations as trans
@@ -37,6 +39,10 @@ class ThrusterAllocatorNode(ThrusterManager):
         ThrusterManager.__init__(self)
 
         self.last_update = rospy.Time.now()
+        self._last_command_wall = time.monotonic()
+        self._command_lock = threading.RLock()
+        self._watchdog_stopped = False
+        rospy.on_shutdown(self.stop_thrusters)
 
         # Subscriber to the wrench to be applied on the UUV
         self.input_sub = rospy.Subscriber('thruster_manager/input',
@@ -61,17 +67,38 @@ class ThrusterAllocatorNode(ThrusterManager):
             'thruster_manager/get_config', GetThrusterManagerConfig,
             self.get_config)
 
-        rate = rospy.Rate(self.config['update_rate'])
         while not rospy.is_shutdown():
-            if self.config['timeout'] > 0:
-                # If a timeout is set, zero the outputs to the thrusters if
-                # there is no command signal for the length of timeout
-                if rospy.Time.now() - self.last_update > self.config['timeout']:
-                    print('Turning thrusters off - inactive for too long')
-                    if self.thrust is not None:
-                        self.thrust.fill(0)
-                        self.command_thrusters()
-            rate.sleep()
+            self.check_timeout()
+            # Actuator timeout must also expire when /clock is paused.
+            time.sleep(1.0 / max(1, self.config['update_rate']))
+
+    def stop_thrusters(self):
+        with self._command_lock:
+            if self.thrust is not None:
+                self.thrust.fill(0)
+                self.command_thrusters()
+            self._watchdog_stopped = True
+
+    def check_timeout(self):
+        with self._command_lock:
+            if (self.config['timeout'] > 0 and not self._watchdog_stopped and
+                    time.monotonic() - self._last_command_wall > self.config['timeout']):
+                self.stop_thrusters()
+
+    def accept_wrench(self, force, torque, frame_id=None):
+        with self._command_lock:
+            if not self.ready:
+                return
+            if (not numpy.isfinite(numpy.r_[force, torque]).all() or
+                    frame_id not in (None, self.config['base_link'], self.config['base_link'] + '_ned') or
+                    (frame_id == self.config['base_link'] + '_ned' and self.base_link_ned_to_enu is None)):
+                self.stop_thrusters()
+                rospy.logwarn_throttle(1, 'Rejected invalid thruster wrench or frame')
+                return
+            self.publish_thrust_forces(force, torque, frame_id)
+            self.last_update = rospy.Time.now()
+            self._last_command_wall = time.monotonic()
+            self._watchdog_stopped = False
 
     def get_thruster_info(self, request):
         """Return service callback with thruster information."""
@@ -133,9 +160,7 @@ class ThrusterAllocatorNode(ThrusterManager):
 
         # This mode assumes that the wrench is given wrt thruster manager
         # configured base_link reference
-        self.publish_thrust_forces(force, torque)
-
-        self.last_update = rospy.Time.now()
+        self.accept_wrench(force, torque)
 
     def input_stamped_callback(self, msg):
         """
@@ -152,8 +177,7 @@ class ThrusterAllocatorNode(ThrusterManager):
             (msg.wrench.torque.x, msg.wrench.torque.y, msg.wrench.torque.z))
 
         # Send the frame ID for the requested wrench
-        self.publish_thrust_forces(force, torque, msg.header.frame_id.split('/')[-1])
-        self.last_update = rospy.Time.now()
+        self.accept_wrench(force, torque, msg.header.frame_id.split('/')[-1])
 
 
 if __name__ == '__main__':

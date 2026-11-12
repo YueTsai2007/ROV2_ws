@@ -1,27 +1,27 @@
 Panels:
-  - Class: rviz/Displays
-    Name: Displays
-  - Class: rviz/Selection
-    Name: Selection
-  - Class: rviz/Tool Properties
-    Name: Tool Properties
-  - Class: rviz/Views
-    Name: Views
+- Class: rviz/Displays
+  Name: Displays
+- Class: rviz/Selection
+  Name: Selection
+- Class: rviz/Tool Properties
+  Name: Tool Properties
+- Class: rviz/Views
+  Name: Views
 Visualization Manager:
   Displays:
-    - Class: rviz/Grid
-      Enabled: true
-      Name: Grid
-    - Class: rviz/TF
-      Name: TF
-      Frame Timeout: 15
-    - Class: rviz/RobotModel
-      Enabled: true
-      Name: RobotModel
-      Robot Description: /underwater_robot/robot_description
-      TF Prefix: underwater_robot
-      Visual Enabled: true
-      Collision Enabled: false
+  - Class: rviz/Grid
+    Enabled: true
+    Name: Grid
+  - Class: rviz/TF
+    Name: TF
+    Frame Timeout: 15
+  - Class: rviz/RobotModel
+    Enabled: true
+    Name: RobotModel
+    Robot Description: /underwater_robot/robot_description
+    TF Prefix: underwater_robot
+    Visual Enabled: true
+    Collision Enabled: false
   Global Options:
     Background Color: 48; 48; 48
     Fixed Frame: world
@@ -29,3 +29,16 @@ Visualization Manager:
     Current:
       Class: rviz/Orbit
       Name: Current View
+      Target Frame: underwater_robot/base_link
+      Distance: 3.0
+      Pitch: 0.45
+      Yaw: 0.7853981633974483
+      Focal Point:
+        X: 0.0
+        Y: 0.0
+        Z: 0.0
+  Tools:
+  - Class: rviz/Interact
+  - Class: rviz/MoveCamera
+  - Class: rviz/Select
+  - Class: rviz/FocusCamera
