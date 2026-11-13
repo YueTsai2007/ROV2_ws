@@ -14,6 +14,7 @@
 # limitations under the License.
 from __future__ import print_function
 import rospy
+import time
 import numpy as np
 from nav_msgs.msg import Odometry
 from copy import deepcopy
@@ -64,9 +65,13 @@ class Vehicle(object):
             tf_buffer = tf2_ros.Buffer()
             listener = tf2_ros.TransformListener(tf_buffer)
 
+            deadline = time.monotonic() + 10.0
+            while not tf_buffer.can_transform('world', 'world_ned', rospy.Time()):
+                if rospy.is_shutdown() or time.monotonic() >= deadline:
+                    raise RuntimeError('Timed out waiting for world_ned transform')
+                time.sleep(0.05)
             tf_trans_ned_to_enu = tf_buffer.lookup_transform(
-                'world', 'world_ned', rospy.Time(),
-                rospy.Duration(10))
+                'world', 'world_ned', rospy.Time())
             
             self.q_ned_to_enu = np.array(
                 [tf_trans_ned_to_enu.transform.rotation.x,
@@ -77,7 +82,7 @@ class Vehicle(object):
             self._logger.warning(
                 'Error while requesting ENU to NED transform'
                 ', message={}'.format(ex))
-            self.q_ned_to_enu = quaternion_from_euler(2 * np.pi, 0, np.pi)
+            self.q_ned_to_enu = quaternion_from_euler(np.pi, 0, np.pi / 2)
                                 
         self.transform_ned_to_enu = quaternion_matrix(
                 self.q_ned_to_enu)[0:3, 0:3]

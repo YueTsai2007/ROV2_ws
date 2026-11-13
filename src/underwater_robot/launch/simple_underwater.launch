@@ -10,12 +10,11 @@
     <arg name="paused" value="false"/>
   </include>
 
-  <!-- UsestdinmethodSpawn robot, avoidParametersServer encoding issues -->
+  <!-- Load robot description globally and spawn robot -->
+  <param name="robot_description" command="cat $(find underwater_robot)/urdf/underwater_robot_complete.urdf" />
   <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" 
-        args="-stdin -urdf -model underwater_robot -x 0 -y 0 -z -5" 
-        output="screen">
-    <param name="robot_description" command="cat $(find underwater_robot)/urdf/underwater_robot_complete.urdf" />
-  </node>
+        args="-param robot_description -urdf -model underwater_robot -x 0 -y 0 -z -5" 
+        output="screen" />
   
   <!-- Only launchrobot_state_publisher, skipjoint_state_publisher -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />

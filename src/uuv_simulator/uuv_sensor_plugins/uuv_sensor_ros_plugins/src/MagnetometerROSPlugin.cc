@@ -79,12 +79,13 @@ void MagnetometerROSPlugin::Load(physics::ModelPtr _model,
   this->AddNoiseModel("noise_xy", this->parameters.noiseXY);
   this->AddNoiseModel("noise_z", this->parameters.noiseZ);
 
+  const double noiseAmp2 = this->noiseAmp * this->noiseAmp;
   this->rosMsg.magnetic_field_covariance[0] =
-    this->parameters.noiseXY * this->parameters.noiseXY;
+    this->parameters.noiseXY * this->parameters.noiseXY * noiseAmp2 * 1e-12;
   this->rosMsg.magnetic_field_covariance[4] =
-    this->parameters.noiseXY * this->parameters.noiseXY;
+    this->parameters.noiseXY * this->parameters.noiseXY * noiseAmp2 * 1e-12;
   this->rosMsg.magnetic_field_covariance[8] =
-    this->parameters.noiseZ * this->parameters.noiseZ;
+    this->parameters.noiseZ * this->parameters.noiseZ * noiseAmp2 * 1e-12;
 
   // Initialize the default magnetometer output
   this->rosSensorOutputPub =
@@ -143,10 +144,11 @@ bool MagnetometerROSPlugin::OnUpdate(const common::UpdateInfo& _info)
     this->gazeboSensorOutputPub->Publish(gazeboMsg);
   }
 
-  this->rosMsg.header.stamp = ros::Time::now();
-  this->rosMsg.magnetic_field.x = this->measMagneticField.X();
-  this->rosMsg.magnetic_field.y = this->measMagneticField.Y();
-  this->rosMsg.magnetic_field.z = this->measMagneticField.Z();
+  this->rosMsg.header.stamp.sec = _info.simTime.sec;
+  this->rosMsg.header.stamp.nsec = _info.simTime.nsec;
+  this->rosMsg.magnetic_field.x = this->measMagneticField.X() * 1e-6;
+  this->rosMsg.magnetic_field.y = this->measMagneticField.Y() * 1e-6;
+  this->rosMsg.magnetic_field.z = this->measMagneticField.Z() * 1e-6;
 
   this->rosSensorOutputPub.publish(this->rosMsg);
   return true;

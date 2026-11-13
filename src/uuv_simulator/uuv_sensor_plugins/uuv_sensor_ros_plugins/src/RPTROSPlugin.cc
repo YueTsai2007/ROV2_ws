@@ -30,7 +30,7 @@ void RPTROSPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 {
   ROSBaseModelPlugin::Load(_model, _sdf);
 
-  double variance = this->noiseSigma * this->noiseSigma;
+  double variance = this->noiseSigma * this->noiseSigma * this->noiseAmp * this->noiseAmp;
   for (int i = 0; i < 9; i++)
     this->rosMessage.pos.covariance[i] = 0;
 
@@ -98,7 +98,7 @@ bool RPTROSPlugin::OnUpdate(const common::UpdateInfo& _info)
   if (this->gazeboMsgEnabled)
   {
     sensor_msgs::msgs::Rpt gazeboMessage;
-    double variance = this->noiseSigma * this->noiseSigma;
+    double variance = this->noiseSigma * this->noiseSigma * this->noiseAmp * this->noiseAmp;
     // Prepare constant covariance part of message
     for (int i = 0 ; i < 9; i++)
     {
@@ -116,6 +116,7 @@ bool RPTROSPlugin::OnUpdate(const common::UpdateInfo& _info)
     gazeboMessage.set_allocated_position(p);
     this->gazeboSensorOutputPub->Publish(gazeboMessage);
   }
+  return true;
 }
 
 /////////////////////////////////////////////////

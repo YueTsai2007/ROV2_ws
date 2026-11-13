@@ -98,6 +98,12 @@ class DPPIDControllerBase(DPControllerBase):
         self._Kp = np.diag(kp)
         self._Ki = np.diag(ki)
         self._Kd = np.diag(kd)
+        sat = getattr(self, '_control_saturation', None)
+        for i in range(6):
+            if ki[i] <= 0:
+                self._int[i] = 0.0
+            elif sat is not None and sat > 0:
+                self._int[i] = np.clip(self._int[i], -sat / ki[i], sat / ki[i])
         return SetPIDParamsResponse(True)
 
     def get_pid_params_callback(self, request):
@@ -122,10 +128,25 @@ class DPPIDControllerBase(DPControllerBase):
         """
         if not self.odom_is_init:
             return
-        # Update integrator
-        self._int += 0.5 * (self.error_pose_euler + self._error_pose) * self._dt
+        p_term = np.dot(self._Kp, self.error_pose_euler)
+        d_term = np.dot(self._Kd, self._errors['vel'])
+        int_delta = 0.5 * (self.error_pose_euler + self._error_pose) * self._dt
+        sat = getattr(self, '_control_saturation', None)
+        for i in range(6):
+            ki_i = self._Ki[i, i]
+            if ki_i <= 0:
+                self._int[i] = 0.0
+                continue
+            candidate = self._int[i] + int_delta[i]
+            if sat is not None and sat > 0:
+                raw_out = p_term[i] + d_term[i] + ki_i * candidate
+                if (raw_out > sat and int_delta[i] > 0) or (
+                        raw_out < -sat and int_delta[i] < 0):
+                    candidate = self._int[i]
+                limit = sat / ki_i
+                self._int[i] = np.clip(candidate, -limit, limit)
+            else:
+                self._int[i] = candidate
         # Store current pose error
         self._error_pose = self.error_pose_euler
-        return np.dot(self._Kp, self.error_pose_euler) \
-            + np.dot(self._Kd, self._errors['vel']) \
-            + np.dot(self._Ki, self._int)
+        return p_term + d_term + np.dot(self._Ki, self._int)

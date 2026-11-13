@@ -11,7 +11,7 @@ def main():
     urdf_file = os.path.join(rospkg.RosPack().get_path('underwater_robot'), 'urdf', 'test_simple.urdf')
     
     # ReadURDFFile
-    with open(urdf_file, 'r') as f:
+    with open(urdf_file, 'r', encoding='utf-8') as f:
         urdf_content = f.read()
     
     # Call spawn_model via subprocess, pass directlyXMLContent

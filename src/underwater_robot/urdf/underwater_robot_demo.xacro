@@ -315,6 +315,7 @@
   <gazebo>
     <plugin name="demo_hydrodynamics" filename="libuuv_underwater_object_ros_plugin.so">
       <fluid_density>1028.0</fluid_density>
+      <flow_velocity_topic>hydrodynamics/current_velocity</flow_velocity_topic>
       <link name="base_link">
         <neutrally_buoyant>true</neutrally_buoyant>
         <volume>0.024319066147859923</volume>

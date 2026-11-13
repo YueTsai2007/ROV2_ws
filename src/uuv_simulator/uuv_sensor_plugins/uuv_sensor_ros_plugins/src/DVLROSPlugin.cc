@@ -115,7 +115,7 @@ void DVLROSPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
     this->twistROSMsg.header.frame_id = this->link->GetName();
   }
 
-  double variance = this->noiseSigma * this->noiseSigma;
+  double variance = this->noiseSigma * this->noiseSigma * this->noiseAmp * this->noiseAmp;
 
   // Set covariance
   for (int i = 0; i < 9; i++)
@@ -179,7 +179,7 @@ bool DVLROSPlugin::OnUpdate(const common::UpdateInfo& _info)
   if (this->gazeboMsgEnabled)
   {
     sensor_msgs::msgs::Dvl dvlGazeboMsg;
-    double variance = this->noiseSigma * this->noiseSigma;
+    double variance = this->noiseSigma * this->noiseSigma * this->noiseAmp * this->noiseAmp;
 
     for (int i = 0; i < 9; i++)
     {

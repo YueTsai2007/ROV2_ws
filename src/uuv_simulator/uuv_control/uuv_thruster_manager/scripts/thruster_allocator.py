@@ -177,7 +177,8 @@ class ThrusterAllocatorNode(ThrusterManager):
             (msg.wrench.torque.x, msg.wrench.torque.y, msg.wrench.torque.z))
 
         # Send the frame ID for the requested wrench
-        self.accept_wrench(force, torque, msg.header.frame_id.split('/')[-1])
+        frame_id = msg.header.frame_id.split('/')[-1] if msg.header.frame_id else None
+        self.accept_wrench(force, torque, frame_id)
 
 
 if __name__ == '__main__':

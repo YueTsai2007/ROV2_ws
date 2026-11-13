@@ -101,7 +101,7 @@ def load_fixed_params(grid_config):
             assert os.path.isfile(grid_config['fixed_params']), 'Invalid fixed parameters file'
             assert '.yml' in grid_config['fixed_params'] or '.yaml' in grid_config['fixed_params']
             with open(grid_config['fixed_params']) as fp_file:
-                fixed_params = yaml.load(fp_file)
+                fixed_params = yaml.safe_load(fp_file)
         else:
             BATCH_LOGGER.error('Invalid fixed parameter list input')
             sys.exit(0)
@@ -120,7 +120,7 @@ def load_cost_fcn(grid_config):
             assert os.path.isfile(grid_config['cost_fcn']), 'Invalid cost function file'
             assert '.yml' in grid_config['cost_fcn'] or '.yaml' in grid_config['cost_fcn']
             with open(grid_config['cost_fcn']) as cf_file:
-                cf = yaml.load(cf_file)                    
+                cf = yaml.safe_load(cf_file)                    
                 assert isinstance(cf, dict)
             cost_function.from_dict(cf)
             BATCH_LOGGER.info('Cost function loaded from file, filename=' + grid_config['cost_fcn'])
@@ -135,7 +135,7 @@ def load_cost_fcn(grid_config):
             assert os.path.isfile(grid_config['constraints']), 'Invalid constraints file'
             assert '.yml' in grid_config['constraints'] or '.yaml' in grid_config['constraints']
             with open(grid_config['constraints']) as cf_file:
-                con = yaml.load(cf_file)                    
+                con = yaml.safe_load(cf_file)                    
                 assert isinstance(con, list)
             cost_function.add_constraints(con)
             BATCH_LOGGER.info('Constraints loaded from file, filename=' + grid_config['constraints'])
@@ -147,7 +147,7 @@ def load_cost_fcn(grid_config):
 def load_grid_config(config_filename):
     # Load optimization configuration
     with open(args.config_file, 'r') as c_file:
-        grid_config = yaml.load(c_file)
+        grid_config = yaml.safe_load(c_file)
 
     # Generate the parameter vectors
     assert type(grid_config) == dict, 'List of parameters must be a dictionary'
@@ -160,7 +160,7 @@ def generate_tasks(output_dir, task_template_file, grid_config, tasks_dir):
     assert '.yml' in args.task or '.yaml' in task_template_file, 'Task file is not a YAML file'
 
     with open(task_template_file, 'r') as task_file:
-        task_config = yaml.load(task_file)    
+        task_config = yaml.safe_load(task_file)    
     
     # Copy the input map
     input_map = deepcopy(grid_config['input_map'])
@@ -330,7 +330,7 @@ if __name__ == '__main__':
                 tasks.append(task)
     else:
         with open(output_sim_file) as a_file:
-            data = yaml.load(a_file)
+            data = yaml.safe_load(a_file)
         finished_tasks = [data['task_file'][i] for i in data['task_file']]
         for task in sorted(os.listdir(tasks_dir)):
             if task in finished_tasks:
@@ -338,7 +338,7 @@ if __name__ == '__main__':
             tasks.append(task)   
 
     atoi = lambda a: int(a) if a.isdigit() else a
-    natural_keys = lambda text: [atoi(c) for c in re.split('(\d+)', text)]
+    natural_keys = lambda text: [atoi(c) for c in re.split(r'(\d+)', text)]
 
     batch_size = 2 * args.max_num_processes
 
@@ -375,7 +375,7 @@ if __name__ == '__main__':
 
                 # Update the batch runs analysis data
                 with open(item['task'], 'r') as task_file:
-                    task_data = yaml.load(task_file)
+                    task_data = yaml.safe_load(task_file)
 
                 sim_data = dict()
 
@@ -405,7 +405,7 @@ if __name__ == '__main__':
                 else:
                     # Update the loaded data from past simulations
                     with open(output_sim_file, 'r') as output_file:
-                        output_sim_data = yaml.load(output_file)
+                        output_sim_data = yaml.safe_load(output_file)
 
                     output_df = pandas.DataFrame(output_sim_data)
 
@@ -447,7 +447,7 @@ if __name__ == '__main__':
             os.makedirs(reference_dir)
 
         with open(args.task, 'r') as task_file:
-            task_config = yaml.load(task_file)  
+            task_config = yaml.safe_load(task_file)  
 
         generate_task(
             task_config, 

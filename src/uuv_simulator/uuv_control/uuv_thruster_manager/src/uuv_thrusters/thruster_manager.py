@@ -20,7 +20,7 @@ from tf_quaternion import transformations
 import tf2_ros
 from os.path import isdir, join
 import yaml
-from time import sleep
+from time import sleep, monotonic
 from uuv_gazebo_ros_plugins_msgs.msg import FloatStamped
 from geometry_msgs.msg import Wrench
 import xml.etree.ElementTree as etree
@@ -90,9 +90,14 @@ class ThrusterManager:
             else:
                 target = 'base_link'
                 source = 'base_link_ned'
-            source = source[1::]
+            source = source.lstrip('/')
+            deadline = monotonic() + 1.0
+            while not tf_buffer.can_transform(target, source, rospy.Time()):
+                if rospy.is_shutdown() or monotonic() >= deadline:
+                    raise RuntimeError('Timed out waiting for base_link transform')
+                sleep(0.05)
             tf_trans_ned_to_enu = tf_buffer.lookup_transform(
-                target, source, rospy.Time(), rospy.Duration(1))
+                target, source, rospy.Time())
         except Exception as e:
             rospy.loginfo('No transform found between base_link and base_link_ned'
                   ' for vehicle {}, message={}'.format(self.namespace, e))

@@ -42,6 +42,7 @@ class ControlTests(unittest.TestCase):
         p._is_automatic=False; p._last_teleop_update=None
         p._last_teleop_reference_time=None; p._teleop_timeout=.5
         p._teleop_vel_ref=None; p._max_forward_speed=.2
+        p._is_teleop_active=False; p._this_ref_pnt=None
         p.init_odom_event=threading.Event(); p.init_odom_event.set()
         return p
 
@@ -66,6 +67,18 @@ class ControlTests(unittest.TestCase):
         with patch('rospy.get_time',return_value=1.),patch('rospy.logwarn_throttle'):
             p._update_teleop(cmd)
         self.assertFalse(p._is_teleop_active)
+
+    def test_repeated_zero_commands_keep_the_stop_position(self):
+        planner = self.planner()
+        command = Twist()
+        command.linear.x = .1
+        with patch('rospy.get_time', return_value=1.):
+            planner._update_teleop(command)
+            planner._update_teleop(Twist())
+            stop_position = planner._this_ref_pnt.pos.copy()
+            planner._vehicle_pose.pos = stop_position + np.array([.2, 0., 0.])
+            planner._update_teleop(Twist())
+        np.testing.assert_array_equal(planner._this_ref_pnt.pos, stop_position)
 
     def test_configured_saturation_is_used_by_real_initializer_and_output(self):
         path=CONTROL/'uuv_trajectory_control/src/uuv_control_interfaces/dp_controller_base.py'
@@ -130,6 +143,41 @@ class ControlTests(unittest.TestCase):
         self.assertEqual(config['thruster_manager']['max_thrust'],8)
         # CAD vertical axes become the standard body +Z direction.
         np.testing.assert_allclose(b[:3,2:4],[[0,0],[0,0],[1,1]],atol=1e-12)
+
+    def test_pid_anti_windup_freezes_and_clamps_integrator(self):
+        path = CONTROL / 'uuv_trajectory_control/src/uuv_control_interfaces/dp_pid_controller_base.py'
+        ns = {'np': np, 'SetPIDParamsResponse': lambda ok: ok}
+        update_pid = method(path, 'update_pid', ns)
+        set_params = method(path, 'set_pid_params_callback', ns)
+        ctrl = SimpleNamespace(
+            odom_is_init=True,
+            _Kp=np.diag([15., 0., 0., 0., 0., 0.]),
+            _Kd=np.zeros((6, 6)),
+            _Ki=np.diag([5., 0., 0., 0., 0., 0.]),
+            _int=np.zeros(6),
+            _error_pose=np.array([3.0, 0., 0., 0., 0., 0.]),
+            error_pose_euler=np.array([3.0, 0., 0., 0., 0., 0.]),
+            _errors={'vel': np.zeros(6)},
+            _dt=1.0,
+            _control_saturation=30.0,
+        )
+        # P term alone is 45 > 30 (saturated) with positive error; integrator must freeze at 0.
+        update_pid(ctrl)
+        self.assertEqual(ctrl._int[0], 0.0)
+        # When error is small (unsaturated), integrator accumulates and clamps to sat / Ki = 6.0.
+        ctrl._error_pose = np.array([1.0, 0., 0., 0., 0., 0.])
+        ctrl.error_pose_euler = np.array([1.0, 0., 0., 0., 0., 0.])
+        for _ in range(10):
+            update_pid(ctrl)
+        self.assertLessEqual(ctrl._int[0], 6.0 + 1e-12)
+        self.assertGreater(ctrl._int[0], 0.0)
+        # Changing Ki via set_pid_params_callback clamps existing _int or zeroes when Ki=0.
+        req = SimpleNamespace(Kp=[15.] + [0.] * 5, Kd=[0.] * 6, Ki=[10.] + [0.] * 5)
+        self.assertTrue(set_params(ctrl, req))
+        self.assertLessEqual(ctrl._int[0], 3.0 + 1e-12)
+        req_zero = SimpleNamespace(Kp=[15.] + [0.] * 5, Kd=[0.] * 6, Ki=[0.] * 6)
+        self.assertTrue(set_params(ctrl, req_zero))
+        self.assertEqual(ctrl._int[0], 0.0)
 
 
 if __name__=='__main__': unittest.main()

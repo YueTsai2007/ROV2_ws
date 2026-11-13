@@ -67,6 +67,87 @@ class RuntimeScriptsTest(unittest.TestCase):
         self.assertIn('<robot', argv[4])
         self.assertIn('-urdf', argv)
 
+    def test_demo_keyboard_filters_ansi_escape_and_restores_terminal(self):
+        class FakeTwist:
+            def __init__(self):
+                self.linear = SimpleNamespace(x=0.0, y=0.0, z=0.0)
+                self.angular = SimpleNamespace(x=0.0, y=0.0, z=0.0)
+
+        chars = iter(['\x1b', '[', 'D', '\x03'])
+        fake_stdin = SimpleNamespace(
+            isatty=lambda: True,
+            fileno=lambda: 0,
+            read=lambda n=1: next(chars),
+        )
+        fake_termios = Mock(TCSADRAIN=1)
+        fake_termios.tcgetattr.return_value = ['saved_settings']
+        fake_tty = Mock()
+        published = []
+        self.ros.ROSException = type('ROSException', (Exception,), {})
+        self.ros.is_shutdown.return_value = False
+        self.ros.get_param.side_effect = lambda name, default: default
+
+        def publish_and_fail_on_stop(msg):
+            published.append((msg.linear.x, msg.linear.y, msg.linear.z, msg.angular.z))
+            raise self.ros.ROSException('publisher closed')
+
+        self.ros.Publisher.return_value.publish.side_effect = publish_and_fail_on_stop
+        with patch.dict(sys.modules, {
+            'termios': fake_termios,
+            'tty': fake_tty,
+            'geometry_msgs': Mock(),
+            'geometry_msgs.msg': SimpleNamespace(Twist=FakeTwist),
+        }):
+            kb = load_script('demo_keyboard')
+            with patch.object(kb.sys, 'stdin', fake_stdin), \
+                 patch.object(kb.select, 'select', return_value=([fake_stdin], [], [])):
+                kb.main()
+
+        self.assertTrue(all(v == (0.0, 0.0, 0.0, 0.0) for v in published))
+        fake_termios.tcsetattr.assert_called_once_with(fake_stdin, fake_termios.TCSADRAIN, ['saved_settings'])
+
+    def test_demo_command_guard_monotonic_ordering_and_safe_stop(self):
+        guard = load_script('demo_command_guard')
+        buf = guard.CommandBuffer(10.0, 0.5)
+        with patch.object(guard.time, 'monotonic', side_effect=[10.0, 10.1]):
+            buf.accept(0, 5.0)
+            self.assertEqual(buf.values()[0], 5.0)
+        buf.accept(1, 3.0, now=10.5)
+        self.assertEqual(buf.values(now=10.2)[1], 0.0)
+        self.assertEqual(buf.values(now=10.6)[:2], [0.0, 3.0])
+
+        self.ros.ROSException = type('ROSException', (Exception,), {})
+        self.ros.is_shutdown.return_value = True
+        self.ros.get_param.side_effect = lambda name, default: default
+        self.ros.Publisher.return_value.publish.side_effect = self.ros.ROSException('closed')
+        with patch.dict(sys.modules, {
+            'uuv_gazebo_ros_plugins_msgs': Mock(),
+            'uuv_gazebo_ros_plugins_msgs.msg': SimpleNamespace(
+                FloatStamped=lambda: SimpleNamespace(header=SimpleNamespace(stamp=None), data=0.0)
+            ),
+        }):
+            guard.main()
+
+    def test_demo_command_guard_normalizes_output_prefix(self):
+        guard = load_script('demo_command_guard')
+        self.assertEqual(guard.normalize_output_prefix(''), 'thrusters')
+        self.assertEqual(guard.normalize_output_prefix('/'), 'thrusters')
+        self.assertEqual(guard.normalize_output_prefix('thrusters/'), 'thrusters')
+        self.assertEqual(guard.normalize_output_prefix('/ns/thrusters/'), '/ns/thrusters')
+
+        self.ros.ROSException = type('ROSException', (Exception,), {})
+        self.ros.is_shutdown.return_value = True
+        self.ros.get_param.side_effect = lambda name, default: '/' if name == '~output_prefix' else default
+        with patch.dict(sys.modules, {
+            'uuv_gazebo_ros_plugins_msgs': Mock(),
+            'uuv_gazebo_ros_plugins_msgs.msg': SimpleNamespace(
+                FloatStamped=lambda: SimpleNamespace(header=SimpleNamespace(stamp=None), data=0.0)
+            ),
+        }):
+            guard.main()
+        topics = [call.args[0] for call in self.ros.Publisher.call_args_list]
+        self.assertEqual(topics, [f'thrusters/{i}/input' for i in range(6)])
+
 
 if __name__ == '__main__':
     unittest.main()

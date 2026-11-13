@@ -85,6 +85,7 @@ def build():
     ET.SubElement(ET.SubElement(collision, 'geometry'), 'box', size=vector(size))
     hydro = ET.SubElement(ET.SubElement(root, 'gazebo'), 'plugin', name='demo_hydrodynamics', filename='libuuv_underwater_object_ros_plugin.so')
     text(hydro, 'fluid_density', params['fluid_density'])
+    text(hydro, 'flow_velocity_topic', 'hydrodynamics/current_velocity')
     hlink = ET.SubElement(hydro, 'link', name='base_link')
     text(hlink, 'neutrally_buoyant', 'true'); text(hlink, 'volume', mass/params['fluid_density'])
     text(hlink, 'center_of_buoyancy', vector(params['center_of_buoyancy']))

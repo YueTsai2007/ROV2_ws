@@ -13,7 +13,7 @@ echo "=== 检查URDF ==="
 check_urdf src/underwater_robot/urdf/underwater_robot_simple_geometry.urdf
 
 echo "=== 检查网格文件 ==="
-roscd underwater_robot/meshes
+cd "$(rospack find underwater_robot)/meshes"
 find . -name "*.STL" | wc -l
 
 echo "=== 启动简单Gazebo测试 ==="

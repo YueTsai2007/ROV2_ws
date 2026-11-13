@@ -103,8 +103,9 @@ bool SubseaPressureROSPlugin::OnUpdate(const common::UpdateInfo& _info)
   rosMsg.header.stamp.nsec = _info.simTime.nsec;
   rosMsg.header.frame_id = this->link->GetName();
 
-  rosMsg.fluid_pressure = pressure;
-  rosMsg.variance = this->noiseSigma * this->noiseSigma;
+  rosMsg.fluid_pressure = pressure * 1e3;
+  const double pressureStddevPa = this->noiseSigma * this->noiseAmp * 1e3;
+  rosMsg.variance = pressureStddevPa * pressureStddevPa;
 
   this->rosSensorOutputPub.publish(rosMsg);
 

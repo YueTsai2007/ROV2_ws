@@ -220,13 +220,13 @@ void PoseGTROSPlugin::PublishOdomMessage(common::Time _time,
   odomMsg.twist.twist.angular.z = _angVel.Z();
 
   // Fill in the covariance matrix
-  double gn2 = this->noiseSigma * this->noiseSigma;
-  odomMsg.pose.covariance[0] = gn2;
-  odomMsg.pose.covariance[7] = gn2;
-  odomMsg.pose.covariance[14] = gn2;
-  odomMsg.pose.covariance[21] = gn2;
-  odomMsg.pose.covariance[28] = gn2;
-  odomMsg.pose.covariance[35] = gn2;
+  double gn2 = this->noiseSigma * this->noiseSigma * this->noiseAmp * this->noiseAmp;
+  odomMsg.pose.covariance[0] = 0.0;
+  odomMsg.pose.covariance[7] = 0.0;
+  odomMsg.pose.covariance[14] = 0.0;
+  odomMsg.pose.covariance[21] = 0.0;
+  odomMsg.pose.covariance[28] = 0.0;
+  odomMsg.pose.covariance[35] = 0.0;
 
   odomMsg.twist.covariance[0] = gn2;
   odomMsg.twist.covariance[7] = gn2;
@@ -290,13 +290,13 @@ void PoseGTROSPlugin::PublishNEDOdomMessage(common::Time _time,
   odomMsg.twist.twist.angular.y = _angVel.Y();
   odomMsg.twist.twist.angular.z = _angVel.Z();
 
-  double gn2 = this->noiseSigma * this->noiseSigma;
-  odomMsg.pose.covariance[0] = gn2;
-  odomMsg.pose.covariance[7] = gn2;
-  odomMsg.pose.covariance[14] = gn2;
-  odomMsg.pose.covariance[21] = gn2;
-  odomMsg.pose.covariance[28] = gn2;
-  odomMsg.pose.covariance[35] = gn2;
+  double gn2 = this->noiseSigma * this->noiseSigma * this->noiseAmp * this->noiseAmp;
+  odomMsg.pose.covariance[0] = 0.0;
+  odomMsg.pose.covariance[7] = 0.0;
+  odomMsg.pose.covariance[14] = 0.0;
+  odomMsg.pose.covariance[21] = 0.0;
+  odomMsg.pose.covariance[28] = 0.0;
+  odomMsg.pose.covariance[35] = 0.0;
 
   odomMsg.twist.covariance[0] = gn2;
   odomMsg.twist.covariance[7] = gn2;

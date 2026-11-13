@@ -31,25 +31,17 @@
   <gazebo>
     <plugin name="uuv_plugin" filename="libuuv_underwater_object_ros_plugin.so">
       <fluid_density>1028.0</fluid_density>
-      <volume>0.05</volume>
-      <bbox_height>0.5</bbox_height>
-      <bbox_length>1.0</bbox_length>
-      <bbox_width>0.8</bbox_width>
-      <hydro_model_type>fossen</hydro_model_type>
-      <added_mass>
-        <x>30</x> <y>30</y> <z>30</z>
-        <roll>5</roll> <pitch>5</pitch> <yaw>5</yaw>
-      </added_mass>
-      <linear_damping>
-        <x>15</x> <y>15</y> <z>15</z>
-      </linear_damping>
-      <angular_damping>
-        <x>15</x> <y>15</y> <z>15</z>
-      </angular_damping>
-      <center_of_buoyancy>
-        <x>0</x> <y>0</y> <z>0.05</z>
-      </center_of_buoyancy>
-      <neutrally_buoyant>false</neutrally_buoyant>
+      <!-- Estimated neutral buoyancy for the existing 21.961 kg link. -->
+      <link name="base_link">
+        <neutrally_buoyant>true</neutrally_buoyant>
+        <volume>0.021363005825292</volume>
+        <center_of_buoyancy>0 0 0.04</center_of_buoyancy>
+        <hydrodynamic_model>
+          <type>fossen</type>
+          <linear_damping>-40 -40 -50 -8 -8 -8</linear_damping>
+          <quadratic_damping>-40 -40 -50 -8 -8 -8</quadratic_damping>
+        </hydrodynamic_model>
+      </link>
     </plugin>
   </gazebo>
 

@@ -63,7 +63,7 @@ class TestRunTask(unittest.TestCase):
         self.assertIn('params_0.yml', os.listdir(runner.current_sim_results_dir),'Parameter file created correctly')
 
         with open(os.path.join(runner.current_sim_results_dir, 'params_0.yml'), 'r') as c_file:
-            params = yaml.load(c_file)
+            params = yaml.safe_load(c_file)
 
         for tag in PARAMS:
             self.assertIn(tag, params, 'Tag <%s> does not exist in the stored parameter list' % tag)

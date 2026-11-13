@@ -11,6 +11,6 @@
 
   <!-- Spawn using file directly -->
   <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" 
-        args="-file $(find underwater_robot)/urdf/underwater_robot_clean.urdf -urdf -model underwater_robot -x 0 -y 0 -z -5" />
+        args="-file $(find underwater_robot)/urdf/underwater_robot.urdf -urdf -model underwater_robot -x 0 -y 0 -z -5" />
   
 </launch>

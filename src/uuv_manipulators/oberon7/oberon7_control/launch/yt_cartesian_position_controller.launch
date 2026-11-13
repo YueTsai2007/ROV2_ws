@@ -16,7 +16,7 @@
   <!-- 启动雅克比转置控制器节点 (仅机械臂) -->
   <!--node name="cartesian_controller" pkg="uuv_manipulators_control" type="yt_cartesian_position_controllers.py"
     respawn="false" output="screen"-->
-    <node name="cartesian_controller" pkg="uuv_manipulators_control" type="yt_cartesian_position_controllers.py" ns="/rexrov/oberon7" output="screen">
+    <node name="cartesian_controller" pkg="uuv_manipulators_control" type="yt_cartesian_position_controllers.py" ns="$(arg uuv_name)/$(arg arm_name)" output="screen">
 
     <!--remap from="cmd_vel" to="jt_vel_input"/-->
     <!-- 这里可以移除 Kp 和 Kd 的参数传递，直接在 Python 代码中定义了 -->

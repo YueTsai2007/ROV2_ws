@@ -2,30 +2,87 @@
 <!-- Based on rexrov_actuators.xacro structure -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
+  <xacro:include filename="$(find uuv_descriptions)/urdf/common.urdf.xacro"/>
+  <xacro:include filename="$(find uuv_gazebo_ros_plugins)/urdf/thruster_snippets.xacro"/>
+
   <!-- Degree to radian conversion factor -->
   <xacro:property name="d2r" value="0.017453292519943295"/>
 
-  <xacro:macro name="underwater_robot_actuators" params="namespace">
+  <xacro:macro name="underwater_robot_thruster_macro"
+      params="namespace thruster_id *origin parent_link:=base_link dyn_time_constant:=0.2 rotor_constant:=0.001">
+    <joint name="${namespace}/thruster_${thruster_id}_joint" type="continuous">
+      <xacro:insert_block name="origin"/>
+      <axis xyz="1 0 0"/>
+      <parent link="${parent_link}"/>
+      <child link="${namespace}/thruster_${thruster_id}"/>
+    </joint>
+
+    <link name="${namespace}/thruster_${thruster_id}">
+      <xacro:box_inertial x="0" y="0" z="0" mass="0.001">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </xacro:box_inertial>
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename="file://$(find uuv_descriptions)/meshes/prop.dae" scale="1 1 1"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <cylinder length="0.000001" radius="0.000001"/>
+        </geometry>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </collision>
+    </link>
+
+    <gazebo>
+      <plugin name="${namespace}_${thruster_id}_thruster_model" filename="libuuv_thruster_ros_plugin.so">
+        <linkName>${namespace}/thruster_${thruster_id}</linkName>
+        <jointName>${namespace}/thruster_${thruster_id}_joint</jointName>
+        <thrusterID>${thruster_id}</thrusterID>
+        <xacro:rotor_dyn_first_order_macro time_constant="${dyn_time_constant}"/>
+        <xacro:thruster_cf_basic_macro rotor_constant="${rotor_constant}"/>
+      </plugin>
+    </gazebo>
+
+    <gazebo reference="${namespace}/thruster_${thruster_id}">
+      <selfCollide>false</selfCollide>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:macro name="underwater_robot_actuators" params="namespace parent_link:=base_link">
     
     <!-- Front left thruster - based on J1 joint -->
-    <xacro:thruster_macro namespace="${namespace}" thruster_id="0">
+    <xacro:underwater_robot_thruster_macro
+      namespace="${namespace}"
+      thruster_id="0"
+      parent_link="${parent_link}">
       <origin xyz="0.28826 0.18 -0.10969" rpy="0 0 0"/>
-    </xacro:thruster_macro>
+    </xacro:underwater_robot_thruster_macro>
     
     <!-- Front right thruster - based on J2 joint -->
-    <xacro:thruster_macro namespace="${namespace}" thruster_id="1">
+    <xacro:underwater_robot_thruster_macro
+      namespace="${namespace}"
+      thruster_id="1"
+      parent_link="${parent_link}">
       <origin xyz="0.28826 0.18 0.10969" rpy="0 0 0"/>
-    </xacro:thruster_macro>
+    </xacro:underwater_robot_thruster_macro>
     
     <!-- Rear left thruster - based on J7 joint -->
-    <xacro:thruster_macro namespace="${namespace}" thruster_id="2">
+    <xacro:underwater_robot_thruster_macro
+      namespace="${namespace}"
+      thruster_id="2"
+      parent_link="${parent_link}">
       <origin xyz="-0.28828 0.18 -0.10969" rpy="0 0 0"/>
-    </xacro:thruster_macro>
+    </xacro:underwater_robot_thruster_macro>
     
     <!-- Rear right thruster - based on J8 joint -->
-    <xacro:thruster_macro namespace="${namespace}" thruster_id="3">
+    <xacro:underwater_robot_thruster_macro
+      namespace="${namespace}"
+      thruster_id="3"
+      parent_link="${parent_link}">
       <origin xyz="-0.28828 0.18 0.10969" rpy="0 0 0"/>
-    </xacro:thruster_macro>
+    </xacro:underwater_robot_thruster_macro>
     
     <!-- If more thrusters needed, can add based on J5 and J6 joints -->
     <!--

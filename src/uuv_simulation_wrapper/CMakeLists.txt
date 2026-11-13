@@ -17,6 +17,8 @@ catkin_package()
 
 catkin_install_python(PROGRAMS scripts/set_simulation_timer
                                scripts/unpause_simulation
+                               scripts/run_batch
+                               scripts/clean_port_locks
                       DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 install(DIRECTORY launch

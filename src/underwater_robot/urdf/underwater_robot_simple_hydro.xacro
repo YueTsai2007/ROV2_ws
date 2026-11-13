@@ -11,8 +11,14 @@
   <gazebo>
     <plugin name="uuv_plugin" filename="libuuv_underwater_object_ros_plugin.so">
       <fluid_density>1028.0</fluid_density>
-      <volume>0.02</volume>
-      <neutrally_buoyant>false</neutrally_buoyant>
+      <link name="base_link">
+        <neutrally_buoyant>false</neutrally_buoyant>
+        <volume>0.02</volume>
+        <center_of_buoyancy>0 0 0</center_of_buoyancy>
+        <hydrodynamic_model>
+          <type>fossen</type>
+        </hydrodynamic_model>
+      </link>
     </plugin>
   </gazebo>
 

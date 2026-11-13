@@ -2,7 +2,7 @@
 
 基于 ROS + Gazebo 的 ROV（遥控水下航行器）仿真与控制系统研发平台。
 
-## 低推力遥控演示（2026-11-07）
+## 快速启动低推力演示
 
 建议使用新的独立演示入口。模型采用明确标注的估算质量、惯量、阻尼和中性浮力，统一为 **X 前、Y 左、Z 上**；原始 CAD URDF 和网格保留。演示中的机械臂和 CAD 视觉关节固定，不用于实机参数或机械臂动力学验证。
 
@@ -40,9 +40,17 @@ rosservice call /gazebo/pause_physics
 GALLIUM_DRIVER=llvmpipe LIBGL_ALWAYS_SOFTWARE=1 rviz -d "$(rospack find underwater_robot)/config/standard_ros.rviz"
 ```
 
-实际模型默认需要先有位姿/TF 数据；启动即暂停时先短暂运行再暂停。不要同时启动独立 `display.launch`，它会发布另一套模型参数和静态 TF。
+演示模型和原始模型启动即暂停时，会从 Gazebo 读取初始姿态并发布 TF。不要同时启动独立 `display.launch`，它会发布另一套模型参数和静态 TF。
 
-本次 14 项离线回归、输出隔离、真实键盘 PTY 和四方向短时低推力运动验证通过。运动方向已核对；速度精度、长期稳定性和外扰性能尚未验收。详情见 [修复与验证记录](docs/CONTROL_DEMO_FIX.md)。下文的原始模型入口保留作研发对照，其质量/浮力参数不适合作为本演示的遥控入口。
+## 修复分支验收状态
+
+- ROS Noetic / Gazebo 11 容器内全工作区构建通过。最近一批传感器改动完成重新编译，Python 回归 19 项全部通过。
+- 前进、左移、上升和转向已通过低推力实测。演示模型在 0.20 m/s 持续水流下，稳态位置误差约 1.6 mm，撤流恢复后约 3.8 mm，单路峰值推力约 3.34 N。
+- RexROV 2 完成两圈螺旋轨迹，位置 RMSE 约 0.187 m。模拟摇杆已验证双臂及载体联动。
+- Gazebo 已验证模型生成，演示机器人初始位于世界坐标 `(0, 0, -3)` m。RViz 日志确认过 NVIDIA D3D12 渲染器，硬件加速下的 STL 网格画面仍待目视确认。
+- 自定义机械臂的 ±1 rad 位置限位已验证。实测瞬态速度超过 URDF 配置，实际施加力矩仍待直接验证。实机参数和抓取验收也待完成。
+
+复测命令和逐项修改见 [修复与验收记录](docs/CONTROL_DEMO_FIX.md)。原始模型启动入口用于研发对照，稳定遥控演示请使用上面的 `demo.launch`。
 
 - **自定义机器人**：`underwater_robot` — 6 推进器、10 连杆的 ROV
 - **上游框架**：AGDR_UVMS（基于 [UUV Simulator](https://github.com/uuvsimulator/uuv_simulator)，兼容 ROS Noetic）
@@ -90,7 +98,7 @@ ROV2_ws/
 - 修正传感器基础初始化和磁力计更新函数缺少成功返回值的问题；修正海底场景暂停参数，并为基础仿真和 RexROV 演示增加 `gui:=false` 无界面选项。
 - 更新分阶段启动说明，忽略构建产物，并加入命令转发、异常输入、模型生成失败等回归测试。
 
-在 ROS Noetic / Gazebo 11 Docker 中，完整 catkin 构建和 7 项回归测试通过；暂停状态下，自定义机器人模型、位姿及六个推进器接口通过检查。RexROV 模型、PID 和推进器分配器已启动，双机械臂模型已生成。螺旋轨迹采样初始化和重复 TF 时间戳问题已修复；容器实测轨迹生成及发布成功，短时重测未出现重复 TF。机械臂依赖安装后协同控制进程已启动，但暂停仿真下控制器等待 TF，完整协同运动和动态控制仍待验证；测试环境没有摇杆和图形界面。详细记录见 [第二轮状态](src/underwater_robot/ROUND2_STATUS.md) 和下方快速开始说明。
+在 ROS Noetic / Gazebo 11 容器中，全工作空间干净构建和 15 项回归通过。演示模型的低推力运动、RexROV 2 两圈螺旋轨迹以及模拟摇杆控制双臂已实测。原始模型的暂停启动、单关节机械臂及旧完整模型的浮力已有针对性修复。物理参数仍为演示估算，实物摇杆、接触抓取与 NVIDIA 加速下 RViz 网格显示仍待验收。完整记录见 [控制链修复与验证](docs/CONTROL_DEMO_FIX.md)；[第二轮状态](src/underwater_robot/ROUND2_STATUS.md)保留早期结果。
 
 ---
 
@@ -236,7 +244,7 @@ rosservice call /gazebo/pause_physics '{}'
 roslaunch underwater_robot start_uuv_pid_controller.launch
 ```
 
-控制器依赖位姿和 TF；暂停状态下可能等待仿真时间或 TF。也可以启动时传 `start_controller:=true`，但这不保证模型、TF 与控制器按就绪顺序启动。**当前自定义模型质量与排水体积不匹配，推进矩阵秩为 5，机械臂限位为零；PID 动态表现未验证。** 动态运行前需校准模型，详见 [第一轮集成状态](src/underwater_robot/ROUND1_STATUS.md)。
+控制器依赖位姿和 TF。暂停启动的 PID 与分配器已完成初始化检查；恢复仿真后仍需确认位姿、TF 和推进器连接。原始模型的质量、浮力与推进参数尚未按实机校准，推进矩阵秩为 5，原始模型 PID 动态表现仍待验收。可重复的低推力演示使用本 README 顶部的 `demo.launch`，详细参数和测试范围见 [控制链修复与验证](docs/CONTROL_DEMO_FIX.md)。
 
 可选的 RViz 模型查看命令如下，需要图形桌面：
 
@@ -304,7 +312,13 @@ roslaunch oberon7_control uuv_oberon7_cooperate_teleop.launch \
   uuv_name:=rexrov model_name:=rexrov joy_id:=0
 ```
 
-在另一个终端检查 `rosnode list | grep /rexrov` 和 `rostopic list | grep /rexrov`。如果提示无法打开 `/dev/input/js0`，请检查摇杆是否存在以及容器设备映射。模型和控制进程已做启动检查，完整摇杆操纵和机械臂运动尚未验证；暂停仿真时控制器可能等待 TF。结束时在终端 3、2、1 依次按 `Ctrl+C`。
+**终端 4** 为另一只机械臂启动关节控制。
+
+```bash
+roslaunch oberon4_control joint_control.launch uuv_name:=rexrov
+```
+
+两个机械臂和载体共用 `/rexrov/joy`。已用仿真的 `Joy` 消息验证载体和双臂同时运动，并抽测 Oberon 7 夹爪。实物摇杆需另行连接并确认设备映射。暂停仿真时控制器可能等待 TF。结束时依次关闭终端 4、3、2、1。
 
 更多轨迹、扰动和推进器命令可参考 [docs/shuoming.txt](docs/shuoming.txt)；其中历史命令未逐项验证，启动参数以本 README 和对应 launch 文件为准。
 
@@ -328,7 +342,7 @@ roslaunch oberon7_control uuv_oberon7_cooperate_teleop.launch \
 | `urdf/underwater_robot_complete.xacro` | 完整版（含执行器） |
 | `urdf/underwater_robot_uuv2.xacro` | UUV 框架兼容版（当前使用） |
 | `urdf/underwater_robot_simple_geometry.urdf` | 简化几何版（快速测试） |
-| `urdf/underwater_robot_clean.urdf` | 清洁版（无头仿真用） |
+| `urdf/underwater_robot_clean.urdf` | 历史 launch 内容，不能作为 URDF 加载 |
 | `urdf/underwater_robot_simple_hydro.xacro` | 简化流体动力学版 |
 | `urdf/archive/` | 历史/未使用版本 |
 
@@ -339,7 +353,8 @@ roslaunch oberon7_control uuv_oberon7_cooperate_teleop.launch \
 | `launch/simple_gazebo_test.launch` | 最简 Gazebo 测试 |
 | `launch/start_uuv_pid_controller.launch` | PID 控制器及推进器分配器（需先启动场景和机器人） |
 | `launch/final_underwater_sim.launch` | 最终水下仿真 |
-| `launch/headless_underwater.launch` | 无头模式（仅 gzserver） |
+| `launch/headless_underwater.launch` | 无头演示模型，默认暂停且未启动控制器 |
+| `launch/underwater_robot_control.launch` | 为已启动的演示模型启动 PID，可选 `joy_on:=true` |
 | `launch/arm_control.launch` | 机械臂独立控制 |
 | `launch/underwater_ned_compatible.launch` | NED 坐标系兼容 |
 

@@ -12,11 +12,10 @@
     <arg name="debug" value="false"/>
   </include>
 
-  <!-- Usestdinway to spawn underwater robot -->
+  <!-- Load robot description and spawn underwater robot -->
+  <param name="robot_description" command="cat $(find underwater_robot)/urdf/underwater_robot.urdf" />
   <node name="spawn_underwater" pkg="gazebo_ros" type="spawn_model" 
-        args="-stdin -urdf -model underwater_robot -x 0 -y 0 -z -5" 
-        output="screen">
-    <param name="robot_description" command="cat $(find underwater_robot)/urdf/underwater_robot.urdf" />
-  </node>
+        args="-param robot_description -urdf -model underwater_robot -x 0 -y 0 -z -5" 
+        output="screen" />
   
-</launch>s
+</launch>

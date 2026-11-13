@@ -164,7 +164,7 @@ class ArmInterface(KinChainInterface):
 
         # Compute the pose of all frames, if requested
         if self._compute_fk_for_all:
-            for idx in xrange(self.n_links):
+            for idx in range(self.n_links):
                 self._frames[idx] = self.forward_position_kinematics(q, segment_idx=idx)
         # End effector pose
         pose = self.forward_position_kinematics(q)

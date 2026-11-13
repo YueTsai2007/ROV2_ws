@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import os
+import sys
 import rospy
 import rospkg
 
@@ -11,7 +12,7 @@ def set_clean_urdf():
     rospack = rospkg.RosPack()
     pkg_path = rospack.get_path('underwater_robot')
     urdf_path = os.path.join(pkg_path, 'urdf', 'underwater_robot.urdf')
-    with open(urdf_path, 'r') as f:
+    with open(urdf_path, 'r', encoding='utf-8') as f:
         urdf_content = f.read()
     
     # CleanupWindowsNewline
@@ -31,3 +32,4 @@ if __name__ == '__main__':
         set_clean_urdf()
     except Exception as e:
         print("Failed to set clean URDF:", str(e))
+        sys.exit(1)

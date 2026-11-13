@@ -26,3 +26,9 @@ catkin_install_python(PROGRAMS
   scripts/pause_tf_cache.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+if(CATKIN_ENABLE_TESTING)
+  catkin_add_nosetests(test/test_control_chain.py)
+  catkin_add_nosetests(test/test_geometry.py)
+  catkin_add_nosetests(test/test_runtime_scripts.py)
+endif()

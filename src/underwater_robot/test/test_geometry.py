@@ -43,8 +43,10 @@ class GeometryTest(unittest.TestCase):
             self.assertEqual(float(plugins[i].findtext('./conversion/rotorConstant')), cfg['thruster_manager']['conversion_fcn_params']['gain'])
 
     def test_launch_xml(self):
-        for name in ['bringup.launch', 'underwater_uuv.launch', 'start_uuv_pid_controller.launch']:
-            self.assertEqual(ET.parse(ROOT / 'launch' / name).getroot().tag, 'launch')
+        launch_files = sorted((ROOT / 'launch').glob('*.launch'))
+        self.assertGreater(len(launch_files), 0)
+        for path in launch_files:
+            self.assertEqual(ET.parse(path).getroot().tag, 'launch', msg=path.name)
 
 if __name__ == '__main__':
     unittest.main()

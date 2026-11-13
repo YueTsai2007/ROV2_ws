@@ -84,9 +84,10 @@ void IMUROSPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   // a continuous-time density (two-sided spectrum); not the true covariance
   // of the measurements.
   // Angular velocity measurement covariance.
+  const double noiseAmp2 = this->noiseAmp * this->noiseAmp;
   this->AddNoiseModel("gyro_noise_density", this->imuParameters.gyroscopeNoiseDensity);
   double gyroVar = this->imuParameters.gyroscopeNoiseDensity *
-    this->imuParameters.gyroscopeNoiseDensity;
+    this->imuParameters.gyroscopeNoiseDensity * noiseAmp2;
   this->imuROSMessage.angular_velocity_covariance[0] = gyroVar;
   this->imuROSMessage.angular_velocity_covariance[4] = gyroVar;
   this->imuROSMessage.angular_velocity_covariance[8] = gyroVar;
@@ -94,7 +95,7 @@ void IMUROSPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   // Linear acceleration measurement covariance.
   this->AddNoiseModel("acc_noise_density", this->imuParameters.accelerometerNoiseDensity);
   double accelVar = this->imuParameters.accelerometerNoiseDensity *
-    this->imuParameters.accelerometerNoiseDensity;
+    this->imuParameters.accelerometerNoiseDensity * noiseAmp2;
   this->imuROSMessage.linear_acceleration_covariance[0] = accelVar;
   this->imuROSMessage.linear_acceleration_covariance[4] = accelVar;
   this->imuROSMessage.linear_acceleration_covariance[8] = accelVar;
@@ -102,7 +103,7 @@ void IMUROSPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   // Orientation estimate covariance
   this->AddNoiseModel("orientation_noise_density", this->imuParameters.orientationNoise);
   double orientationVar = this->imuParameters.orientationNoise *
-    this->imuParameters.orientationNoise;
+    this->imuParameters.orientationNoise * noiseAmp2;
   this->imuROSMessage.orientation_covariance[0] = orientationVar;
   this->imuROSMessage.orientation_covariance[4] = orientationVar;
   this->imuROSMessage.orientation_covariance[8] = orientationVar;

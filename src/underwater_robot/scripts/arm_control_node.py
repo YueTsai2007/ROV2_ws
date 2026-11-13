@@ -33,8 +33,6 @@ class ArmController:
             idx = msg.name.index(self.arm_joint_name)
             if idx >= len(msg.position):
                 return
-            current_angle = msg.position[idx]
-            # rospy.loginfo("Current arm angle: %.2f rad", current_angle)
 
     def arm_command_callback(self, msg):
         # Receive arm control command
@@ -66,11 +64,9 @@ if __name__ == '__main__':
     try:
         controller = ArmController()
 
-        # Wait for system startup
-        rospy.sleep(2.0)
-
         # Run demo or wait for commands
         if rospy.get_param('~demo', False):
+            rospy.sleep(2.0)
             controller.run_demo()
         else:
             rospy.spin()

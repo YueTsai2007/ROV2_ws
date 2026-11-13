@@ -1,18 +1,24 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="namespace" default="underwater_robot"/>
-  <arg name="uuv_name" default="underwater_robot"/>
-  
-  <!-- Launch PID controller -->
-  <include file="$(find uuv_control_cascaded_pid)/launch/joy_velocity.launch">
+  <arg name="uuv_name" default="$(arg namespace)"/>
+  <arg name="joy_on" default="false"/>
+  <arg name="joy_id" default="0"/>
+  <arg name="deadman_button" default="4"/>
+
+  <!-- Use with the already running demo model and its command guard. -->
+  <include file="$(find underwater_robot)/launch/demo_pid.launch">
     <arg name="uuv_name" value="$(arg uuv_name)"/>
-    <arg name="model_name" value="$(arg uuv_name)"/>
   </include>
-  
-  <!-- Optional: launch keyboard control -->
-  <!-- <include file="$(find uuv_control_cascaded_pid)/launch/keyboard_velocity.launch">
+
+  <include if="$(arg joy_on)" file="$(find uuv_teleop)/launch/uuv_teleop.launch">
     <arg name="uuv_name" value="$(arg uuv_name)"/>
-    <arg name="model_name" value="$(arg uuv_name)"/>
-  </include> -->
-  
+    <arg name="joy_id" value="$(arg joy_id)"/>
+    <arg name="deadman_button" value="$(arg deadman_button)"/>
+    <arg name="exclusion_buttons" value=""/>
+    <arg name="gain_x" value="0.1"/>
+    <arg name="gain_y" value="0.1"/>
+    <arg name="gain_z" value="0.1"/>
+    <arg name="gain_yaw" value="0.15"/>
+  </include>
 </launch>

@@ -338,7 +338,7 @@ class SimulationRunner(object):
                 task_file.write(self._task_text)
 
             with open(task_filename, 'r') as task_file:
-                task = yaml.load(task_file)
+                task = yaml.safe_load(task_file)
                 self._logger.info('Running task: ' + task['id'])
                 # Setting the filename to the resulting rosbag
                 self._recording_filename = os.path.join(self._sim_results_dir, 'recording.bag')
