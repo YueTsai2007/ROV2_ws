@@ -115,10 +115,17 @@ docker exec -it rov2-fix bash
 已使用上面的发布镜像时，每个容器终端加载：
 
 ```bash
-docker exec -it rov2-fix bash
 source /opt/ros/noetic/setup.bash
 source /opt/rov2-release/devel/setup.bash
 ```
+
+从新的 WSL 终端进入正在运行的容器时，先执行：
+
+```bash
+docker exec -it rov2-fix bash
+```
+
+看到容器提示符后，再执行上面的两条 `source` 命令。
 
 先停止其他 Gazebo/bringup 场景，再在终端 1 启动：
 
