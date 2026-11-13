@@ -2,12 +2,6 @@
 
 基于 ROS + Gazebo 的 ROV（遥控水下航行器）仿真与控制系统研发平台。
 
-## 演示
-
-![Gazebo 中的水下机器人低推力遥控演示](docs/media/underwater-demo.gif)
-
-画面来自 `demo.launch` 和 `demo_keyboard.launch` 的实际运行，展示键盘输入下的低推力运动。录制使用云端 Linux、Gazebo 11 和软件渲染；由于云端渲染速度较低，动画采用低帧率采样，不代表 NVIDIA 硬件加速效果。模型及动力学参数为演示估算，机械臂在此场景中固定。
-
 ## Docker 部署与启动（推荐）
 
 已发布镜像基于 ROS Noetic / Gazebo 11，工作空间已在镜像内编译，无需再安装依赖或编译源码。镜像包已关联到本仓库：[`ghcr.io/yuetsai2007/rov2_ws:fix-0e87293`](https://github.com/YueTsai2007/ROV2_ws/pkgs/container/rov2_ws)。
@@ -115,6 +109,10 @@ docker exec -it rov2-fix bash
 若只想结束仿真而保留容器，关闭运行 `roslaunch` 的终端即可；要停止容器则运行 `docker stop rov2-fix`。
 
 ## 快速启动低推力演示
+
+![Gazebo 中的水下机器人低推力遥控演示](docs/media/underwater-demo.gif)
+
+画面来自 `demo.launch` 和 `demo_keyboard.launch` 的实际运行。录制使用云端 Linux、Gazebo 11 和软件渲染；由于云端渲染速度较低，动画采用低帧率采样，不代表 NVIDIA 硬件加速效果。模型及动力学参数为演示估算，机械臂在此场景中固定。
 
 建议使用新的独立演示入口。模型采用明确标注的估算质量、惯量、阻尼和中性浮力，统一为 **X 前、Y 左、Z 上**；原始 CAD URDF 和网格保留。演示中的机械臂和 CAD 视觉关节固定，不用于实机参数或机械臂动力学验证。
 
@@ -366,6 +364,10 @@ roslaunch underwater_robot display.launch
 
 ### 3. RexROV 2：水下场景和螺旋轨迹
 
+![RexROV 2 两圈螺旋轨迹演示](docs/media/rexrov-helix.gif)
+
+左侧为 Gazebo 跟随视角的片段；右侧为同次运行中 `/rexrov2/pose_gt` 实测位姿绘制的完整轨迹，经过加速回放。云端使用软件渲染，实测轨迹约 2.02 圈；[位姿采样数据](docs/media/rexrov-helix-poses.csv)使用仿真时间（秒）和世界坐标（米）。
+
 先停止上一场景。**终端 1**启动海洋环境、RexROV 2、推进器分配器和 PID：
 
 ```bash
@@ -395,9 +397,13 @@ rostopic info /rexrov2/dp_controller/trajectory
 rostopic echo -n 1 /rexrov2/dp_controller/trajectory/header
 ```
 
-轨迹生成与发布已做短时验证；完整轨迹跟踪尚未验收。终端 1 按 `Ctrl+C` 结束整个场景。
+两圈轨迹跟踪的验证记录见 [控制链修复与验证](docs/CONTROL_DEMO_FIX.md)。终端 1 按 `Ctrl+C` 结束整个场景。
 
 ### 4. 双机械臂 UVMS：场景、模型和协同控制
+
+![模拟摇杆控制载体和双机械臂](docs/media/dual-arm-teleop.gif)
+
+画面来自 Gazebo 实际运行：向 `/rexrov/joy` 发布模拟摇杆消息，同时控制载体与两只机械臂。本次采集期间，Oberon 4 方位关节及 Oberon 7 肘关节反馈均发生变化。录制使用软件渲染、低帧率采样和加速回放；实物摇杆及接触抓取仍需单独验证。
 
 先停止上一场景，并在每个新终端加载环境。协同遥控需要安装 `tf_conversions` 并连接摇杆；容器使用摇杆时还需在**创建容器时**将设备映射进去，例如 Docker 的 `--device=/dev/input/js0:/dev/input/js0`。请根据实际设备调整编号。
 
