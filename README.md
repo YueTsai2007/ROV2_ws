@@ -375,6 +375,18 @@ roslaunch underwater_robot display.launch
 roslaunch rexrov2_gazebo start_demo_pid_controller.launch gui:=false
 ```
 
+源码构建的当前分支还提供可选的水下雾效，减少远处海底和背景发白：
+
+```bash
+roslaunch rexrov2_gazebo start_demo_pid_controller.launch gui:=true underwater_visual:=true
+```
+
+不指定该参数（或设置为 `false`）时沿用原始场景。雾效是整个场景的渲染效果，也会影响水面以上和仿真相机，不改变水动力；它不会把水体变成真实的体积水。此选项需要使用包含本次修改的源码工作空间，顶部已有的 `fix-0e87293` 发布镜像不包含它，需重新构建工作空间或镜像后使用。
+
+![原场景与水下雾效的相机画面对照](docs/media/water-camera-comparison.png)
+
+上图为云端软件渲染的 RexROV 2 主相机在两次独立启动中的采样；三路相机均收到 768×492 的 RGB 图像。图像说明视觉效果，不代表 GPU 加速或水下光学模型标定。
+
 等待模型生成、`ThrusterManager: ready` 和 `PID controller ready!` 等日志。新开并配置好环境的**终端 2**检查：
 
 ```bash

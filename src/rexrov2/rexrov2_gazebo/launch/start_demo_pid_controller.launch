@@ -13,8 +13,11 @@
     <arg name="teleop_on" default="false" doc="If true, the teleop node will be started"/>
     <arg name="joy_id" default="0" doc="Joystick ID"/>
 
+    <arg name="underwater_visual" default="false" doc="Use the optional underwater fog scene"/>
+
     <include file="$(find uuv_gazebo_worlds)/launch/ocean_waves.launch">
         <arg name="gui" value="$(arg gui)"/>
+        <arg name="underwater_visual" value="$(arg underwater_visual)"/>
     </include>
 
     <include file="$(find uuv_simulation_wrapper)/launch/unpause_simulation.launch">
