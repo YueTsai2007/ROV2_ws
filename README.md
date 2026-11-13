@@ -2,16 +2,122 @@
 
 基于 ROS + Gazebo 的 ROV（遥控水下航行器）仿真与控制系统研发平台。
 
-## 快速启动低推力演示
+## Docker 部署与启动（推荐）
 
-建议使用新的独立演示入口。模型采用明确标注的估算质量、惯量、阻尼和中性浮力，统一为 **X 前、Y 左、Z 上**；原始 CAD URDF 和网格保留。演示中的机械臂和 CAD 视觉关节固定，不用于实机参数或机械臂动力学验证。
+已发布镜像基于 ROS Noetic / Gazebo 11，工作空间已在镜像内编译，无需再安装依赖或编译源码。镜像包已关联到本仓库：[`ghcr.io/yuetsai2007/rov2_ws:fix-0e87293`](https://github.com/YueTsai2007/ROV2_ws/pkgs/container/rov2_ws)。
 
-每个终端先加载 Noetic 和工作空间；在本次容器中为：
+### 1. 准备 Docker Desktop 和 WSLg
+
+在 Windows 的 Docker Desktop 设置中启用 WSL 2 引擎，并为 Ubuntu 发行版启用 WSL Integration。然后从 **Ubuntu WSL 终端**执行下面的命令；不要在普通 Windows PowerShell 中运行 WSLg 图形启动命令。Ubuntu 终端应能运行 `docker version`，并且 `/mnt/wslg` 存在。
+
+```bash
+docker version
+ls /mnt/wslg
+```
+
+### 2. 拉取 Fix 分支镜像
+
+```bash
+docker pull ghcr.io/yuetsai2007/rov2_ws:fix-0e87293
+```
+
+若镜像包设为私有，先在 WSL 终端登录 GHCR，再拉取。Docker 会在终端提示输入 Personal Access Token；不要把 Token 写入命令、README 或聊天记录。公开包无需登录。
+
+```bash
+docker login ghcr.io -u YueTsai2007
+```
+
+### 3. 创建带 NVIDIA GPU 和 WSLg 图形转发的容器
+
+在 Ubuntu WSL 终端执行。`--gpus all` 请求 Docker 将 NVIDIA GPU 暴露给容器；`/mnt/wslg` 和相关环境变量用于把 WSLg 的 X11/Wayland 图形会话转发到容器。
+
+```bash
+docker run -it --name rov2-fix --gpus all \
+  -e DISPLAY="$DISPLAY" \
+  -e WAYLAND_DISPLAY="$WAYLAND_DISPLAY" \
+  -e XDG_RUNTIME_DIR=/mnt/wslg/runtime-dir \
+  -e PULSE_SERVER="$PULSE_SERVER" \
+  -e NVIDIA_DRIVER_CAPABILITIES=all \
+  -v /mnt/wslg:/mnt/wslg \
+  -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
+  ghcr.io/yuetsai2007/rov2_ws:fix-0e87293 bash
+```
+
+这会进入容器 shell。若提示容器名已存在，先检查 `docker ps -a`；需要继续使用原容器时运行 `docker start -ai rov2-fix`，不需要时可用 `docker rm rov2-fix` 删除这个**指定容器**后再创建。不要删除镜像。
+
+### 4. 在容器内启动 Gazebo 仿真
+
+容器 shell 中加载镜像内已编译的 ROS 和工作空间：
+
+```bash
+source /opt/ros/noetic/setup.bash
+source /opt/rov2-release/devel/setup.bash
+```
+
+启动带 Gazebo GUI、PID 控制器并立即运行的低推力演示：
+
+```bash
+roslaunch underwater_robot demo.launch gui:=true paused:=false start_controller:=true
+```
+
+如果只需无界面仿真，将 `gui:=true` 改成 `gui:=false`。若要先检查场景再运行，可用 `paused:=true`，之后在另一终端调用 `/gazebo/unpause_physics`。
+
+### 5. 在第二个终端遥控
+
+保持 Gazebo 终端运行，在另一个 Ubuntu WSL 终端进入同一个容器：
 
 ```bash
 docker exec -it rov2-fix bash
 source /opt/ros/noetic/setup.bash
-source /opt/rov2-fix-local/devel/setup.bash
+source /opt/rov2-release/devel/setup.bash
+roslaunch underwater_robot demo_keyboard.launch
+```
+
+键盘终端需要保持焦点：W/S 前后、A/D 左右、R/F 上下、Q/E 转向；空格清除速度参考，Ctrl+C 退出键盘控制。键盘无输入约 0.2 秒后会发零速度。零速度是位置保持参考，不等同于冻结物理仿真；暂停/恢复 Gazebo 使用：
+
+```bash
+rosservice call /gazebo/pause_physics
+rosservice call /gazebo/unpause_physics
+```
+
+### 6. 在容器内启动 RViz
+
+另开一个 WSL 终端并再次进入容器、加载环境后运行：
+
+```bash
+docker exec -it rov2-fix bash
+source /opt/ros/noetic/setup.bash
+source /opt/rov2-release/devel/setup.bash
+rviz -d "$(rospack find underwater_robot)/config/standard_ros.rviz"
+```
+
+本项目使用 ROS 1 的 **RViz**，不是 RViz2。当前配置以 `world` 为 Fixed Frame，机器人视角跟随 `underwater_robot/base_link`。运行中的演示已经发布机器人描述和 TF，不要再同时启动独立的 `display.launch`，否则会引入重复的模型描述或 TF。
+
+### NVIDIA 渲染检查与说明
+
+容器启动参数 `--gpus all` 和 `NVIDIA_DRIVER_CAPABILITIES=all` 请求 GPU 能力，但实际使用的渲染器还取决于 Windows NVIDIA 驱动、WSL2、Docker Desktop 和 WSLg 的图形转发。Gazebo/RViz 能打开不单独证明正在使用 NVIDIA 硬件渲染；应查看启动日志中的 OpenGL/渲染器信息，并确认没有回退到 `llvmpipe`。本项目已有日志记录显示 RViz 曾检测到 NVIDIA D3D12 渲染器，但该路径下 STL 网格画面仍待目视验收。遇到模型网格不显示时，README 后面的软件渲染命令可用于诊断，软件渲染不代表 NVIDIA 加速。
+
+### 停止和再次进入
+
+仿真及键盘节点分别按 Ctrl+C 后，在容器 shell 输入 `exit`。容器停止后可从 WSL 终端重新进入：
+
+```bash
+docker start rov2-fix
+docker exec -it rov2-fix bash
+```
+
+若只想结束仿真而保留容器，关闭运行 `roslaunch` 的终端即可；要停止容器则运行 `docker stop rov2-fix`。
+
+## 快速启动低推力演示
+
+建议使用新的独立演示入口。模型采用明确标注的估算质量、惯量、阻尼和中性浮力，统一为 **X 前、Y 左、Z 上**；原始 CAD URDF 和网格保留。演示中的机械臂和 CAD 视觉关节固定，不用于实机参数或机械臂动力学验证。
+
+已使用上面的发布镜像时，每个容器终端加载：
+
+```bash
+docker exec -it rov2-fix bash
+source /opt/ros/noetic/setup.bash
+source /opt/rov2-release/devel/setup.bash
 ```
 
 先停止其他 Gazebo/bringup 场景，再在终端 1 启动：
@@ -135,18 +241,9 @@ sudo apt install ros-noetic-joy \
 
 以下步骤以 **Ubuntu 20.04、ROS Noetic、Gazebo 11** 为例。每个终端都需要加载 ROS 和工作空间环境。三种仿真场景分别启动；切换场景前先停止上一个场景，以免重复启动 Gazebo 和 ROS master。
 
-### 进入已有 Docker 容器
+### 从源码工作区构建（可选）
 
-如果 ROS 和 Gazebo 已安装在 Docker 容器中，在**宿主机终端**查看并进入容器：
-
-```bash
-docker ps -a
-# 将 <容器名> 替换为实际名称；容器已运行时可跳过 docker start
-docker start <容器名>
-docker exec -it <容器名> bash
-```
-
-以下示例假设仓库在容器内的 `/ws`。请先用 `ls /ws/src` 确认；路径不同时，将命令中的 `/ws` 换成实际路径。容器需要挂载工作空间并安装本项目依赖；仅使用基础 ROS 镜像并不保证已经安装 Gazebo 和全部依赖。本次验证使用的容器名为 `rov2-onboarding`，该名称并非所有环境通用。
+使用本 README 顶部的已发布镜像时，无需执行本节。以下步骤用于已有源码工作区的本机 Ubuntu，或已挂载源码且预装 ROS Noetic / Gazebo 11 依赖的开发容器；假设工作空间路径为 `/ws`，请按实际路径替换。仅使用基础 ROS 镜像并不保证已安装 Gazebo 和本项目全部依赖。
 
 **本机 Ubuntu** 可跳过 Docker 步骤，将下文 `/ws` 替换为本机仓库路径，例如 `~/ROV2_ws`。如果尚未获取代码：
 
