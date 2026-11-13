@@ -2,6 +2,12 @@
 
 基于 ROS + Gazebo 的 ROV（遥控水下航行器）仿真与控制系统研发平台。
 
+## 演示
+
+![Gazebo 中的水下机器人低推力遥控演示](docs/media/underwater-demo.gif)
+
+画面来自 `demo.launch` 和 `demo_keyboard.launch` 的实际运行，展示键盘输入下的低推力运动。录制使用云端 Linux、Gazebo 11 和软件渲染；由于云端渲染速度较低，动画采用低帧率采样，不代表 NVIDIA 硬件加速效果。模型及动力学参数为演示估算，机械臂在此场景中固定。
+
 ## Docker 部署与启动（推荐）
 
 已发布镜像基于 ROS Noetic / Gazebo 11，工作空间已在镜像内编译，无需再安装依赖或编译源码。镜像包已关联到本仓库：[`ghcr.io/yuetsai2007/rov2_ws:fix-0e87293`](https://github.com/YueTsai2007/ROV2_ws/pkgs/container/rov2_ws)。
