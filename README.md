@@ -67,7 +67,7 @@ source /opt/rov2-release/devel/setup.bash
 roslaunch underwater_robot demo.launch gui:=true paused:=false start_controller:=true
 ```
 
-如果只需无界面仿真，将 `gui:=true` 改成 `gui:=false`。若要先检查场景再运行，可用 `paused:=true`，之后在另一终端调用 `/gazebo/unpause_physics`。
+若要先检查场景再运行，可用 `paused:=true`，之后在另一终端调用 `/gazebo/unpause_physics`。
 
 ### 5. 在第二个终端遥控
 
@@ -122,8 +122,7 @@ docker exec -it rov2-fix bash
 **终端 1**：
 
 ```bash
-# 无图形环境；有可用桌面时改为 gui:=true
-roslaunch underwater_robot simple_gazebo_test.launch gui:=false
+roslaunch underwater_robot simple_gazebo_test.launch gui:=true
 ```
 
 等待日志出现 `Successfully spawned entity`。保持终端 1 运行，在已加载环境的**终端 2**检查：
@@ -137,10 +136,10 @@ rosservice call /gazebo/get_model_properties "model_name: 'underwater_robot'"
 
 ### 2. 自定义 ROV：水下场景与控制器
 
-**终端 1：启动场景和机器人。** 默认暂停，且不会启动 PID。无图形环境使用下面的命令；有图形桌面时可改为 `gui:=true`。
+**终端 1：启动场景和机器人。** 默认暂停，且不会启动 PID。以下命令会打开 Gazebo 窗口。
 
 ```bash
-roslaunch underwater_robot bringup.launch gui:=false paused:=true
+roslaunch underwater_robot bringup.launch gui:=true paused:=true
 ```
 
 等待模型生成成功，然后在**终端 2**检查模型和接口：
@@ -187,8 +186,7 @@ roslaunch underwater_robot display.launch
 先停止上一场景。**终端 1**启动海洋环境、RexROV 2、推进器分配器和 PID：
 
 ```bash
-# 无图形环境；有桌面时可使用 gui:=true
-roslaunch rexrov2_gazebo start_demo_pid_controller.launch gui:=false
+roslaunch rexrov2_gazebo start_demo_pid_controller.launch gui:=true
 ```
 
 源码构建的当前分支还提供可选的水下雾效，减少远处海底和背景发白：
