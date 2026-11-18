@@ -1,4 +1,4 @@
-# ROV2_ws — 水下航行器仿真工作空间
+## ROV2_ws — 水下航行器仿真工作空间
 
 基于 ROS Noetic 和 Gazebo 的水下航行器仿真与控制平台，包含自定义 ROV、RexROV 2、推进器控制、传感器和水下机械臂。
 
@@ -17,11 +17,11 @@
 
 ## Docker 部署与启动（推荐）
 
-已发布镜像基于 ROS Noetic / Gazebo 11，工作空间已在镜像内编译，无需再安装依赖或编译源码。镜像版本对应源码提交 `0e87293`；后续分支新增功能需使用包含相关修改的源码构建。镜像包：[`ghcr.io/yuetsai2007/rov2_ws:fix-0e87293`](https://github.com/YueTsai2007/ROV2_ws/pkgs/container/rov2_ws)。
+已发布镜像基于 ROS Noetic / Gazebo 11，工作空间已在镜像内编译，无需再安装依赖或编译源码。镜像版本对应源码提交 已发布镜像基于 ROS Noetic / Gazebo 11，工作空间已在镜像内编译，无需再安装依赖或编译源码。镜像版本对应源码提交 `0e87293`；后续分支新增功能需使用包含相关修改的源码构建。镜像包：；后续分支新增功能需使用包含相关修改的源码构建。镜像包：[`ghcr.io/yuetsai2007/rov2_ws:fix-0e87293`](https://github.com/YueTsai2007/ROV2_ws/pkgs/container/rov2_ws)。。
 
 ### 1. 准备 Docker Desktop 和 WSLg
 
-在 Windows 的 Docker Desktop 设置中启用 WSL 2 引擎，并为 Ubuntu 发行版启用 WSL Integration。然后从 **Ubuntu WSL 终端**执行下面的命令；不要在普通 Windows PowerShell 中运行 WSLg 图形启动命令。Ubuntu 终端应能运行 `docker version`，并且 `/mnt/wslg` 存在。
+在 Windows 的 Docker Desktop 设置中启用 WSL 2 引擎，并为 Ubuntu 发行版启用 WSL Integration。然后从 在 Windows 的 Docker Desktop 设置中启用 WSL 2 引擎，并为 Ubuntu 发行版启用 WSL Integration。然后从 **Ubuntu WSL 终端**执行下面的命令；不要在普通 Windows PowerShell 中运行 WSLg 图形启动命令。Ubuntu 终端应能运行 执行下面的命令；不要在普通 Windows PowerShell 中运行 WSLg 图形启动命令。Ubuntu 终端应能运行 `docker version`，并且 ，并且 `/mnt/wslg` 存在。 存在。
 
 ```bash
 docker version
@@ -32,10 +32,6 @@ ls /mnt/wslg
 
 ```bash
 docker pull ghcr.io/yuetsai2007/rov2_ws:fix-0e87293
-```
-
-```bash
-docker login ghcr.io -u YueTsai2007
 ```
 
 ### 3. 创建带 NVIDIA GPU 和 WSLg 图形转发的容器
