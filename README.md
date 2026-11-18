@@ -34,8 +34,6 @@ ls /mnt/wslg
 docker pull ghcr.io/yuetsai2007/rov2_ws:fix-0e87293
 ```
 
-若镜像包设为私有，先在 WSL 终端登录 GHCR，再拉取。Docker 会在终端提示输入 Personal Access Token；不要把 Token 写入命令、README 或聊天记录。公开包无需登录。
-
 ```bash
 docker login ghcr.io -u YueTsai2007
 ```
