@@ -307,7 +307,7 @@ cd /ws
 
 ```bash
 # 无图形环境；有可用桌面时去掉 gui:=false
-roslaunch underwater_robot simple_gazebo_test.launch gui:=false
+roslaunch underwater_robot simple_gazebo_test.launch gui:=true
 ```
 
 等待日志出现 `Successfully spawned entity`。保持终端 1 运行，在已加载环境的**终端 2**检查：
@@ -324,7 +324,7 @@ rosservice call /gazebo/get_model_properties "model_name: 'underwater_robot'"
 **终端 1：启动场景和机器人。** 默认暂停，且不会启动 PID。无图形环境使用下面的命令；有图形桌面时可改为 `gui:=true`。
 
 ```bash
-roslaunch underwater_robot bringup.launch gui:=false paused:=true
+roslaunch underwater_robot bringup.launch gui:=true paused:=true
 ```
 
 等待模型生成成功，然后在**终端 2**检查模型和接口：
@@ -372,7 +372,7 @@ roslaunch underwater_robot display.launch
 
 ```bash
 # 无图形环境；有桌面时可使用 gui:=true
-roslaunch rexrov2_gazebo start_demo_pid_controller.launch gui:=false
+roslaunch rexrov2_gazebo start_demo_pid_controller.launch gui:=true
 ```
 
 源码构建的当前分支还提供可选的水下雾效，减少远处海底和背景发白：
@@ -422,7 +422,7 @@ rostopic echo -n 1 /rexrov2/dp_controller/trajectory/header
 **终端 1：启动海底场景。**
 
 ```bash
-roslaunch uuv_gazebo_worlds subsea_bop_panel.launch gui:=false
+roslaunch uuv_gazebo_worlds subsea_bop_panel.launch gui:=true
 ```
 
 等待 Gazebo 启动并提供 `/gazebo/spawn_urdf_model` 服务。在**终端 2**确认服务并生成模型：
