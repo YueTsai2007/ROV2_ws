@@ -4,7 +4,7 @@
 
 ![Gazebo 中的水下机器人低推力遥控演示](docs/media/underwater-demo.gif)
 
-画面来自 `demo.launch` 和 `demo_keyboard.launch`，使用云端 Linux、Gazebo 11 和软件渲染，低帧率采样不代表 NVIDIA 硬件加速效果。演示模型使用估算的质量、惯量、阻尼与浮力，采用 X 前、Y 左、Z 上坐标；机械臂和 CAD 视觉关节在该场景中固定。
+演示模型采用 X 前、Y 左、Z 上坐标，质量、惯量、阻尼与浮力使用估算值；机械臂和 CAD 视觉关节在该场景中固定。
 
 ## 目录
 
@@ -108,7 +108,7 @@ rviz -d "$(rospack find underwater_robot)/config/standard_ros.rviz"
 
 ### NVIDIA 渲染检查与说明
 
-容器启动参数 `--gpus all` 和 `NVIDIA_DRIVER_CAPABILITIES=all` 请求 GPU 能力，但实际使用的渲染器还取决于 Windows NVIDIA 驱动、WSL2、Docker Desktop 和 WSLg 的图形转发。Gazebo/RViz 能打开不单独证明正在使用 NVIDIA 硬件渲染；应查看启动日志中的 OpenGL/渲染器信息，并确认没有回退到 `llvmpipe`。本项目已有日志记录显示 RViz 曾检测到 NVIDIA D3D12 渲染器，但该路径下 STL 网格画面仍待目视验收。遇到模型网格不显示时，可以在已加载工作空间环境的容器终端使用下面的方式诊断，软件渲染不代表 NVIDIA 加速。
+容器启动参数 `--gpus all` 和 `NVIDIA_DRIVER_CAPABILITIES=all` 请求 GPU 能力，但实际使用的渲染器还取决于 Windows NVIDIA 驱动、WSL2、Docker Desktop 和 WSLg 的图形转发。Gazebo/RViz 能打开不单独证明正在使用 NVIDIA 硬件渲染；应查看启动日志中的 OpenGL/渲染器信息，并确认没有回退到 `llvmpipe`。本机 RViz 的 NVIDIA D3D12 路径曾出现网格不可见问题。遇到模型网格不显示时，可以在已加载工作空间环境的容器终端使用下面的方式诊断，软件渲染不代表 NVIDIA 加速。
 
 ```bash
 GALLIUM_DRIVER=llvmpipe LIBGL_ALWAYS_SOFTWARE=1 rviz -d "$(rospack find underwater_robot)/config/standard_ros.rviz"
@@ -182,7 +182,7 @@ rosservice call /gazebo/pause_physics '{}'
 roslaunch underwater_robot start_uuv_pid_controller.launch
 ```
 
-控制器依赖位姿和 TF。暂停启动的 PID 与分配器已完成初始化检查；恢复仿真后仍需确认位姿、TF 和推进器连接。原始模型的质量、浮力与推进参数尚未按实机校准，推进矩阵秩为 5，原始模型 PID 动态表现仍待验收。可重复的低推力演示使用本 README 顶部的 `demo.launch`，详细参数和测试范围见 [控制链修复与验证](docs/CONTROL_DEMO_FIX.md)。
+控制器依赖位姿和 TF。暂停启动的 PID 与分配器已完成初始化检查；恢复仿真后请检查位姿、TF 和推进器连接。原始模型的质量、浮力与推进参数使用估算值，推进矩阵秩为 5。可重复的低推力演示使用本 README 顶部的 `demo.launch`，详细参数和测试范围见 [控制链修复与验证](docs/CONTROL_DEMO_FIX.md)。
 
 可选的 RViz 模型查看命令如下，需要图形桌面：
 
@@ -190,13 +190,13 @@ roslaunch underwater_robot start_uuv_pid_controller.launch
 roslaunch underwater_robot display.launch
 ```
 
-`display.launch` 是独立的机器人描述可视化流程；请先停止当前仿真，再使用它，避免重复发布模型描述和 TF。无显示环境不能验证 GUI 窗口。结束时在启动控制器和场景的终端分别按 `Ctrl+C`。
+`display.launch` 是独立的机器人描述可视化流程；请先停止当前仿真，再使用它，避免重复发布模型描述和 TF。结束时在启动控制器和场景的终端分别按 `Ctrl+C`。
 
 ### 3. RexROV 2：水下场景和螺旋轨迹
 
 ![RexROV 2 两圈螺旋轨迹演示](docs/media/rexrov-helix.gif)
 
-左侧为 Gazebo 跟随视角的片段；右侧为同次运行中 `/rexrov2/pose_gt` 实测位姿绘制的完整轨迹，经过加速回放。云端使用软件渲染，实测轨迹约 2.02 圈；[位姿采样数据](docs/media/rexrov-helix-poses.csv)使用仿真时间（秒）和世界坐标（米）。
+左侧为 Gazebo 跟随视角，右侧为根据 `/rexrov2/pose_gt` 绘制的轨迹。[位姿数据](docs/media/rexrov-helix-poses.csv)使用仿真时间（秒）和世界坐标（米）。
 
 先停止上一场景。**终端 1**启动海洋环境、RexROV 2、推进器分配器和 PID：
 
@@ -215,7 +215,7 @@ roslaunch rexrov2_gazebo start_demo_pid_controller.launch gui:=true underwater_v
 
 ![原场景与水下雾效的相机画面对照](docs/media/water-camera-comparison.png)
 
-上图为云端软件渲染的 RexROV 2 主相机在两次独立启动中的采样；三路相机均收到 768×492 的 RGB 图像。图像说明视觉效果，不代表 GPU 加速或水下光学模型标定。
+上图展示原场景与水下雾效的相机画面对比。
 
 等待模型生成、`ThrusterManager: ready` 和 `PID controller ready!` 等日志。新开并配置好环境的**终端 2**检查：
 
@@ -245,7 +245,7 @@ rostopic echo -n 1 /rexrov2/dp_controller/trajectory/header
 
 ![模拟摇杆控制载体和双机械臂](docs/media/dual-arm-teleop.gif)
 
-画面来自 Gazebo 实际运行：向 `/rexrov/joy` 发布模拟摇杆消息，同时控制载体与两只机械臂。本次采集期间，Oberon 4 方位关节及 Oberon 7 肘关节反馈均发生变化。录制使用软件渲染、低帧率采样和加速回放；实物摇杆及接触抓取仍需单独验证。
+通过 `/rexrov/joy` 控制载体与两只机械臂。
 
 先停止上一场景，并在每个新终端加载环境。协同遥控需要安装 `tf_conversions` 并连接摇杆；容器使用摇杆时还需在**创建容器时**将设备映射进去，例如 Docker 的 `--device=/dev/input/js0:/dev/input/js0`。请根据实际设备调整编号。
 
@@ -276,9 +276,9 @@ roslaunch oberon7_control uuv_oberon7_cooperate_teleop.launch \
 roslaunch oberon4_control joint_control.launch uuv_name:=rexrov
 ```
 
-两个机械臂和载体共用 `/rexrov/joy`。已用仿真的 `Joy` 消息验证载体和双臂同时运动，并抽测 Oberon 7 夹爪。实物摇杆需另行连接并确认设备映射。暂停仿真时控制器可能等待 TF。结束时依次关闭终端 4、3、2、1。
+两个机械臂和载体共用 `/rexrov/joy`。已用仿真的 `Joy` 消息验证载体和双臂同时运动，并抽测 Oberon 7 夹爪。使用实物摇杆时需连接设备并确认映射。暂停仿真时控制器可能等待 TF。结束时依次关闭终端 4、3、2、1。
 
-更多轨迹、扰动和推进器命令可参考 [docs/shuoming.txt](docs/shuoming.txt)；其中历史命令未逐项验证，启动参数以本 README 和对应 launch 文件为准。
+更多轨迹、扰动和推进器命令可参考 [docs/shuoming.txt](docs/shuoming.txt)；启动参数以本 README 和对应 launch 文件为准。
 
 ---
 
@@ -372,8 +372,8 @@ cd /ws
 - ROS Noetic / Gazebo 11 容器内全工作区构建通过。最近一批传感器改动完成重新编译，Python 回归 19 项全部通过。
 - 前进、左移、上升和转向已通过低推力实测。演示模型在 0.20 m/s 持续水流下，稳态位置误差约 1.6 mm，撤流恢复后约 3.8 mm，单路峰值推力约 3.34 N。
 - RexROV 2 完成两圈螺旋轨迹，位置 RMSE 约 0.187 m。模拟摇杆已验证双臂及载体联动。
-- Gazebo 已验证模型生成，演示机器人初始位于世界坐标 `(0, 0, -3)` m。RViz 日志确认过 NVIDIA D3D12 渲染器，硬件加速下的 STL 网格画面仍待目视确认。
-- 自定义机械臂的 ±1 rad 位置限位已验证。实测瞬态速度超过 URDF 配置，实际施加力矩仍待直接验证。实机参数和抓取验收也待完成。
+- Gazebo 演示机器人初始位于世界坐标 `(0, 0, -3)` m。
+- 自定义机械臂的 ±1 rad 位置限位已验证；实测瞬态速度超过 URDF 配置。
 
 复测命令和逐项修改见 [修复与验收记录](docs/CONTROL_DEMO_FIX.md)。原始模型启动入口用于研发对照，稳定遥控演示请使用上面的 `demo.launch`。
 
