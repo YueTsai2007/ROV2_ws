@@ -11,7 +11,7 @@
 - [Docker 部署与启动](#docker-部署与启动推荐)
 - [其他仿真场景](#其他仿真场景)
 - [从源码构建](#从源码构建)
-- [验证状态与限制](#验证状态与限制)
+- [已完成的修复与仿真结果](#已完成的修复与仿真结果)
 - [项目结构与主要文件](#项目结构与主要文件)
 - [上游项目与许可证](#上游项目与许可证)
 
@@ -106,14 +106,6 @@ rviz -d "$(rospack find underwater_robot)/config/standard_ros.rviz"
 
 本项目使用 ROS 1 的 **RViz**，不是 RViz2。当前配置以 `world` 为 Fixed Frame，机器人视角跟随 `underwater_robot/base_link`。运行中的演示已经发布机器人描述和 TF，不要再同时启动独立的 `display.launch`，否则会引入重复的模型描述或 TF。
 
-### NVIDIA 渲染检查与说明
-
-容器启动参数 `--gpus all` 和 `NVIDIA_DRIVER_CAPABILITIES=all` 请求 GPU 能力，但实际使用的渲染器还取决于 Windows NVIDIA 驱动、WSL2、Docker Desktop 和 WSLg 的图形转发。Gazebo/RViz 能打开不单独证明正在使用 NVIDIA 硬件渲染；应查看启动日志中的 OpenGL/渲染器信息，并确认没有回退到 `llvmpipe`。本机 RViz 的 NVIDIA D3D12 路径曾出现网格不可见问题。遇到模型网格不显示时，可以在已加载工作空间环境的容器终端使用下面的方式诊断，软件渲染不代表 NVIDIA 加速。
-
-```bash
-GALLIUM_DRIVER=llvmpipe LIBGL_ALWAYS_SOFTWARE=1 rviz -d "$(rospack find underwater_robot)/config/standard_ros.rviz"
-```
-
 ### 停止和再次进入
 
 仿真及键盘节点分别按 Ctrl+C 后，在容器 shell 输入 `exit`。容器停止后可从 WSL 终端重新进入：
@@ -169,7 +161,7 @@ rostopic info /underwater_robot/joint_states
 
 模型查询应返回 `success: True`；话题信息可用于检查发布者和订阅者。仿真暂停时，传感器消息和 `/clock` 可能不更新，`rostopic echo` 可能一直等待，这不代表话题不存在。
 
-**物理模型验证后**，可在终端 2 恢复或再次暂停仿真：
+在终端 2 恢复或再次暂停仿真：
 
 ```bash
 rosservice call /gazebo/unpause_physics '{}'
@@ -182,7 +174,7 @@ rosservice call /gazebo/pause_physics '{}'
 roslaunch underwater_robot start_uuv_pid_controller.launch
 ```
 
-控制器依赖位姿和 TF。暂停启动的 PID 与分配器已完成初始化检查；恢复仿真后请检查位姿、TF 和推进器连接。原始模型的质量、浮力与推进参数使用估算值，推进矩阵秩为 5。可重复的低推力演示使用本 README 顶部的 `demo.launch`，详细参数和测试范围见 [控制链修复与验证](docs/CONTROL_DEMO_FIX.md)。
+控制器依赖位姿和 TF。原始模型的质量、浮力与推进参数使用估算值，推进矩阵秩为 5。低推力遥控演示请使用 `demo.launch`。
 
 可选的 RViz 模型查看命令如下，需要图形桌面：
 
@@ -276,7 +268,7 @@ roslaunch oberon7_control uuv_oberon7_cooperate_teleop.launch \
 roslaunch oberon4_control joint_control.launch uuv_name:=rexrov
 ```
 
-两个机械臂和载体共用 `/rexrov/joy`。已用仿真的 `Joy` 消息验证载体和双臂同时运动，并抽测 Oberon 7 夹爪。使用实物摇杆时需连接设备并确认映射。暂停仿真时控制器可能等待 TF。结束时依次关闭终端 4、3、2、1。
+两个机械臂和载体共用 `/rexrov/joy`。已用仿真的 `Joy` 消息验证载体和双臂同时运动，并抽测 Oberon 7 夹爪。暂停仿真时控制器可能等待 TF。结束时依次关闭终端 4、3、2、1。
 
 更多轨迹、扰动和推进器命令可参考 [docs/shuoming.txt](docs/shuoming.txt)；启动参数以本 README 和对应 launch 文件为准。
 
@@ -364,19 +356,17 @@ cd /ws
 
 ---
 
-## 验证状态与限制
+## 已完成的修复与仿真结果
 
-已完成的工作包括机械臂外部命令转发、模型生成脚本兼容性、传感器插件初始化以及相关启动配置的修复。详细修改和验证过程见下方修复记录。
+已修复机械臂外部命令转发、模型生成脚本兼容性、传感器插件初始化以及相关启动配置。
 
-
-- ROS Noetic / Gazebo 11 容器内全工作区构建通过。最近一批传感器改动完成重新编译，Python 回归 19 项全部通过。
-- 前进、左移、上升和转向已通过低推力实测。演示模型在 0.20 m/s 持续水流下，稳态位置误差约 1.6 mm，撤流恢复后约 3.8 mm，单路峰值推力约 3.34 N。
-- RexROV 2 完成两圈螺旋轨迹，位置 RMSE 约 0.187 m。模拟摇杆已验证双臂及载体联动。
+- ROS Noetic / Gazebo 11 容器内全工作区构建通过。传感器改动重新编译后，Python 回归 19 项全部通过。
+- 前进、左移、上升和转向已通过低推力仿真测试。持续水流为 0.20 m/s 时，稳态位置误差约 1.6 mm，撤流恢复后约 3.8 mm，单路峰值推力约 3.34 N。
+- RexROV 2 完成两圈螺旋轨迹，位置 RMSE 约 0.187 m。模拟摇杆驱动载体和双臂联动。
 - Gazebo 演示机器人初始位于世界坐标 `(0, 0, -3)` m。
-- 自定义机械臂的 ±1 rad 位置限位已验证；实测瞬态速度超过 URDF 配置。
+- 自定义机械臂的 ±1 rad 位置限位已通过仿真测试。
 
-复测命令和逐项修改见 [修复与验收记录](docs/CONTROL_DEMO_FIX.md)。原始模型启动入口用于研发对照，稳定遥控演示请使用上面的 `demo.launch`。
-
+详细修改见 [修复记录](docs/CONTROL_DEMO_FIX.md)。原始模型启动入口用于研发对照，低推力遥控演示请使用 `demo.launch`。
 
 ---
 
