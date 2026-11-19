@@ -21,7 +21,7 @@
 
 ### 1. 准备 Docker Desktop 和 WSLg
 
-在 Windows 的 Docker Desktop 设置中启用 WSL 2 引擎，并为 Ubuntu 发行版启用 WSL Integration。然后从 在 Windows 的 Docker Desktop 设置中启用 WSL 2 引擎，并为 Ubuntu 发行版启用 WSL Integration。然后从 **Ubuntu WSL 终端**执行下面的命令；不要在普通 Windows PowerShell 中运行 WSLg 图形启动命令。Ubuntu 终端应能运行 执行下面的命令；不要在普通 Windows PowerShell 中运行 WSLg 图形启动命令。Ubuntu 终端应能运行 `docker version`，并且 ，并且 `/mnt/wslg` 存在。 存在。
+在 Windows 的 Docker Desktop 设置中启用 WSL 2 引擎，并为 Ubuntu 发行版启用 WSL Integration。然后从 在 Windows 的 Docker Desktop 设置中启用 WSL 2 引擎，并为 Ubuntu 发行版启用 WSL Integration。然后从 **Ubuntu WSL 终端**执行下面的命令； 
 
 ```bash
 docker version
